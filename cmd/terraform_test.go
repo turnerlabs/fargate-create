@@ -1,0 +1,88 @@
+package cmd
+
+import (
+	"fmt"
+	"strings"
+	"testing"
+)
+
+func TestUpdateTerraformBackend(t *testing.T) {
+
+	tf := `
+terraform {
+	backend "s3" {
+		region  = "us-east-1"
+		profile = ""
+		bucket  = ""
+		key     = "dev.terraform.tfstate"
+	}
+}
+
+provider "aws" {
+	region  = "${var.region}"
+	profile = "${var.aws_profile}"
+}
+`
+
+	profile := "my-profile"
+	app := "my-app"
+	env := "qa"
+	result := updateTerraformBackend(tf, profile, app, env)
+	t.Log(result)
+
+	expected := fmt.Sprintf(`profile = "%s"`, profile)
+	if !strings.Contains(result, expected) {
+		t.Errorf("expected: %s; actual: %s", expected, result)
+	}
+	expected = fmt.Sprintf(`bucket  = "tf-state-%s"`, app)
+	if !strings.Contains(result, expected) {
+		t.Errorf("expected: %s; actual: %s", expected, result)
+	}
+}
+
+func TestParseInputVars(t *testing.T) {
+
+	tf := `
+	region = "us-east-1"
+
+	aws_profile = "default"
+	
+	saml_role = "devops"
+	
+	app = "my-app"
+	
+	environment = "qa"
+	
+	tags = {
+		application   = ""
+		environment   = "dev"
+		team          = ""
+		customer      = ""
+		contact-email = ""
+	}
+	
+	internal = "true"
+`
+
+	app, env, profile, err := parseInputVars(tf)
+
+	t.Log(app)
+	t.Log(env)
+	t.Log(profile)
+	if err != nil {
+		t.Error(err)
+	}
+
+	expected := "my-app"
+	if app != expected {
+		t.Errorf("expected: %s; actual: %s", expected, app)
+	}
+	expected = "qa"
+	if env != expected {
+		t.Errorf("expected: %s; actual: %s", expected, env)
+	}
+	expected = "default"
+	if profile != expected {
+		t.Errorf("expected: %s; actual: %s", expected, profile)
+	}
+}

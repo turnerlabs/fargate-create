@@ -1,0 +1,6 @@
+fargate-create
+vendor
+iac
+.terraform
+hidden.env
+Dockerfile.build
