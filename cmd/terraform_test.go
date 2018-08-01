@@ -43,7 +43,7 @@ provider "aws" {
 func TestParseInputVars(t *testing.T) {
 
 	tf := `
-	region = "us-east-1"
+	region = "us-east-2"
 
 	aws_profile = "default"
 	
@@ -64,11 +64,12 @@ func TestParseInputVars(t *testing.T) {
 	internal = "true"
 `
 
-	app, env, profile, err := parseInputVars(tf)
+	app, env, profile, region, err := parseInputVars(tf)
 
 	t.Log(app)
 	t.Log(env)
 	t.Log(profile)
+	t.Log(region)
 	if err != nil {
 		t.Error(err)
 	}
@@ -83,6 +84,10 @@ func TestParseInputVars(t *testing.T) {
 	}
 	expected = "default"
 	if profile != expected {
+		t.Errorf("expected: %s; actual: %s", expected, profile)
+	}
+	expected = "us-east-2"
+	if region != expected {
 		t.Errorf("expected: %s; actual: %s", expected, profile)
 	}
 }
