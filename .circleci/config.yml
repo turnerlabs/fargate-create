@@ -7,9 +7,8 @@ jobs:
     steps:
       - checkout
       - run: 
-          name: prep for tests
-          command: |
-            dep ensure -v
+          name: download dependencies
+          command: dep ensure -v
       - run: 
           name: run tests
           command: make test
