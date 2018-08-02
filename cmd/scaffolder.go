@@ -31,13 +31,15 @@ func scaffoldInfrastructure(context *scaffoldContext) (string, string) {
 	//copy var file into base module
 	if baseDirInstalled {
 		debug(fmt.Sprintf("copying %s to %s", varFile, baseDir))
-		err := copyFile(varFile, fmt.Sprintf("%s/terraform.tfvars", baseDir))
+		targetFile := getTargetVarFile(context.Format)
+		err := copyFile(varFile, filepath.Join(baseDir, targetFile))
 		check(err)
 	}
 
 	//copy var file into environment module
 	debug(fmt.Sprintf("copying %s to %s", varFile, envDir))
-	err := copyFile(varFile, filepath.Join(envDir, "terraform.tfvars"))
+	targetFile := getTargetVarFile(context.Format)
+	err := copyFile(varFile, filepath.Join(envDir, targetFile))
 	check(err)
 
 	//update tf backend in main.tf to match app/env
@@ -49,6 +51,17 @@ func scaffoldInfrastructure(context *scaffoldContext) (string, string) {
 	check(err)
 
 	return baseDir, envDir
+}
+
+func getTargetVarFile(format string) string {
+	targetFile := ""
+	if format == varFormatHCL {
+		targetFile = "terraform.tfvars"
+	}
+	if format == varFormatJSON {
+		targetFile = "terraform.tfvars.json"
+	}
+	return targetFile
 }
 
 func scaffoldApplication(context *scaffoldContext, envDir string) {

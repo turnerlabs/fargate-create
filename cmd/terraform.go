@@ -1,12 +1,51 @@
 package cmd
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
 )
 
-func parseInputVars(tf string) (string, string, string, string, error) {
+func parseInputVars(format string, input string) (string, string, string, string, error) {
+	if format == varFormatHCL {
+		return parseInputVarsHCL(input)
+	}
+	if format == varFormatJSON {
+		return parseInputVarsJSON(input)
+	}
+	return "", "", "", "", errors.New(`unknown var format: "` + format + `"`)
+}
+
+func parseInputVarsJSON(input string) (string, string, string, string, error) {
+	var data map[string]interface{}
+
+	err := json.Unmarshal([]byte(input), &data)
+	check(err)
+
+	app := data["app"].(string)
+	environment := data["environment"].(string)
+	profile := data["aws_profile"].(string)
+	region := data["region"].(string)
+
+	//did we find it?
+	if app == "" {
+		return "", "", "", "", errors.New(`missing variable: "app"`)
+	}
+	if environment == "" {
+		return "", "", "", "", errors.New(`missing variable: "environment"`)
+	}
+	if profile == "" {
+		return "", "", "", "", errors.New(`missing variable: "profile"`)
+	}
+	if region == "" {
+		return "", "", "", "", errors.New(`missing variable: "region"`)
+	}
+
+	return app, environment, profile, region, nil
+}
+
+func parseInputVarsHCL(tf string) (string, string, string, string, error) {
 	app := ""
 	environment := ""
 	profile := ""
@@ -61,6 +100,9 @@ func parseInputVars(tf string) (string, string, string, string, error) {
 	}
 	if profile == "" {
 		return "", "", "", "", errors.New(`missing variable: "profile"`)
+	}
+	if region == "" {
+		return "", "", "", "", errors.New(`missing variable: "region"`)
 	}
 
 	return app, environment, profile, region, nil

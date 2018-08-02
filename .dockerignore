@@ -4,3 +4,6 @@ iac
 .terraform
 hidden.env
 Dockerfile.build
+.vscode
+terraform.tfvars
+fargate.json
