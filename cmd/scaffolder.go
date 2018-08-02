@@ -99,8 +99,8 @@ func scaffoldApplication(context *scaffoldContext, envDir string) {
 	//ignored file
 	hiddenenv := strings.Split(hiddenEnvFileName, "/")
 	ignoredFiles := []string{hiddenenv[len(hiddenenv)-1], ".terraform"}
-	appendToFile(".gitignore", ignoredFiles)
-	appendToFile(".dockerignore", ignoredFiles)
+	ensureFileContains(".gitignore", ignoredFiles)
+	ensureFileContains(".dockerignore", ignoredFiles)
 }
 
 func getFargateYaml(context *scaffoldContext) string {

@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"text/tabwriter"
 	"text/template"
 )
@@ -175,15 +176,20 @@ func applyTemplate(textTemplate string, data interface{}) string {
 	return buf.String()
 }
 
-func appendToFile(file string, lines []string) {
+func ensureFileContains(file string, lines []string) {
 	if _, err := os.Stat(file); err == nil {
 		//update
-		file, err := os.OpenFile(file, os.O_APPEND|os.O_WRONLY, 0600)
+		osfile, err := os.OpenFile(file, os.O_APPEND|os.O_WRONLY, 0600)
 		check(err)
-		defer file.Close()
+		defer osfile.Close()
 		for _, line := range lines {
-			_, err = file.WriteString("\n" + line)
+			//only write if not exists
+			dat, err := ioutil.ReadFile(file)
 			check(err)
+			if !strings.Contains(string(dat), line) {
+				_, err = osfile.WriteString("\n" + line)
+				check(err)
+			}
 		}
 	} else {
 		//create
