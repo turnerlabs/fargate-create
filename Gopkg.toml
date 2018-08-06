@@ -9,3 +9,7 @@
 [[constraint]]
   name = "github.com/hashicorp/go-getter"
   revision = "a33f09ce9feed989941a4dfe08b3890a0f8aceb9"
+
+[[constraint]]
+  name = "gopkg.in/yaml.v2"
+  version = "2.2.1"

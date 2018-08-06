@@ -13,15 +13,17 @@ import (
 )
 
 const (
-	tempDir       = "fargate-create-template"
-	varFormatHCL  = ".tfvars"
-	varFormatJSON = ".json"
+	tempDir            = "fargate-create-template"
+	templateConfigFile = "fargate-create.yml"
+	varFormatHCL       = ".tfvars"
+	varFormatJSON      = ".json"
 )
 
 var verbose bool
 var varFile string
 var targetDir string
 var templateURL string
+var yesUseDefaults bool
 
 var rootCmd = &cobra.Command{
 	Use:   "fargate-create",
@@ -40,6 +42,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&varFile, "file", "f", "terraform.tfvars", "file specifying Terraform input variables, in either HCL or JSON format")
 	rootCmd.PersistentFlags().StringVarP(&targetDir, "target-dir", "d", "iac", "target directory where code is outputted")
 	rootCmd.PersistentFlags().StringVarP(&templateURL, "template", "t", "https://github.com/turnerlabs/terraform-ecs-fargate/archive/v0.2.0.zip", "URL of a compatible Terraform template")
+	rootCmd.PersistentFlags().BoolVarP(&yesUseDefaults, "yes", "y", false, "don't ask questions and use defaults")
 }
 
 type scaffoldContext struct {
