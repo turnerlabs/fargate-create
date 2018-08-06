@@ -8,6 +8,13 @@ A CLI tool for scaffolding out new [AWS ECS/Fargate](https://aws.amazon.com/farg
 
 The main design goal of this project is to create an easy and maintainable Fargate experience by separating `infrastructure` related concerns and `application` related concerns using tools that are optimized for each.
 
+### Installation
+
+You can install the CLI with a curl utility script (macos/linux) or by downloading the binary from the releases page. Once installed you'll get the `fargate-create` command.
+
+```
+curl -s get-fargate-create.turnerlabs.io | sh
+````
 
 ### Usage
 
@@ -107,10 +114,15 @@ $ fargate-create build circleciv2
 
 ### Extensibility
 
-works with any terraform template repo (`-t`) that has:
+`fargate-create` can scaffold out any Terraform template (specified by `-t`) that meets the following requirements:
+
 - `base` and `env/dev` directory structure 
 - a `env/dev/main.tf` with an s3 remote state backend
 - `app` and `environment` input variables
+
+Optionally:
+
+- add a `fargate-create.yml` ([example here](examples/fargate-create.yml)) to your template to drive custom configuration, prompting for defaults, etc. 
 
 For example (coming soon):
 ```shell

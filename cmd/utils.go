@@ -13,6 +13,9 @@ import (
 	"text/template"
 )
 
+var okayResponses = []string{"y", "Y", "yes", "Yes", "YES"}
+var nokayResponses = []string{"n", "N", "no", "No", "NO"}
+
 func check(e error) {
 	if e != nil {
 		log.Fatal("ERROR: ", e)
@@ -94,8 +97,6 @@ func askForConfirmation() bool {
 	if err != nil {
 		log.Fatal(err)
 	}
-	okayResponses := []string{"y", "Y", "yes", "Yes", "YES"}
-	nokayResponses := []string{"n", "N", "no", "No", "NO"}
 	if containsString(okayResponses, response) {
 		return true
 	} else if containsString(nokayResponses, response) {
@@ -200,4 +201,17 @@ func ensureFileContains(file string, lines []string) {
 		err := ioutil.WriteFile(file, []byte(data), 0644)
 		check(err)
 	}
+}
+
+func promptAndGetResponse(question string, defaultResponse string) string {
+	fmt.Print(question)
+	var response string
+	_, err := fmt.Scanln(&response)
+	if err != nil && err.Error() != "unexpected newline" {
+		log.Fatal(err)
+	}
+	if response == "" {
+		response = defaultResponse
+	}
+	return response
 }
