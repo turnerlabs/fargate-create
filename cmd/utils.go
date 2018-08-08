@@ -8,9 +8,13 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"text/tabwriter"
 	"text/template"
 )
+
+var okayResponses = []string{"y", "Y", "yes", "Yes", "YES"}
+var nokayResponses = []string{"n", "N", "no", "No", "NO"}
 
 func check(e error) {
 	if e != nil {
@@ -93,8 +97,6 @@ func askForConfirmation() bool {
 	if err != nil {
 		log.Fatal(err)
 	}
-	okayResponses := []string{"y", "Y", "yes", "Yes", "YES"}
-	nokayResponses := []string{"n", "N", "no", "No", "NO"}
 	if containsString(okayResponses, response) {
 		return true
 	} else if containsString(nokayResponses, response) {
@@ -175,15 +177,20 @@ func applyTemplate(textTemplate string, data interface{}) string {
 	return buf.String()
 }
 
-func appendToFile(file string, lines []string) {
+func ensureFileContains(file string, lines []string) {
 	if _, err := os.Stat(file); err == nil {
 		//update
-		file, err := os.OpenFile(file, os.O_APPEND|os.O_WRONLY, 0600)
+		osfile, err := os.OpenFile(file, os.O_APPEND|os.O_WRONLY, 0600)
 		check(err)
-		defer file.Close()
+		defer osfile.Close()
 		for _, line := range lines {
-			_, err = file.WriteString("\n" + line)
+			//only write if not exists
+			dat, err := ioutil.ReadFile(file)
 			check(err)
+			if !strings.Contains(string(dat), line) {
+				_, err = osfile.WriteString("\n" + line)
+				check(err)
+			}
 		}
 	} else {
 		//create
@@ -194,4 +201,17 @@ func appendToFile(file string, lines []string) {
 		err := ioutil.WriteFile(file, []byte(data), 0644)
 		check(err)
 	}
+}
+
+func promptAndGetResponse(question string, defaultResponse string) string {
+	fmt.Print(question)
+	var response string
+	_, err := fmt.Scanln(&response)
+	if err != nil && err.Error() != "unexpected newline" {
+		log.Fatal(err)
+	}
+	if response == "" {
+		response = defaultResponse
+	}
+	return response
 }

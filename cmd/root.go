@@ -4,18 +4,26 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sts"
 	"github.com/spf13/cobra"
 )
 
-const tempDir = "fargate-create-template"
+const (
+	tempDir            = "fargate-create-template"
+	templateConfigFile = "fargate-create.yml"
+	varFormatHCL       = ".tfvars"
+	varFormatJSON      = ".json"
+)
 
 var verbose bool
 var varFile string
 var targetDir string
 var templateURL string
+var yesUseDefaults bool
 
 var rootCmd = &cobra.Command{
 	Use:   "fargate-create",
@@ -31,9 +39,10 @@ func Execute(version string) {
 
 func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
-	rootCmd.PersistentFlags().StringVarP(&varFile, "file", "f", "terraform.tfvars", "file specifying Terraform input variables")
+	rootCmd.PersistentFlags().StringVarP(&varFile, "file", "f", "terraform.tfvars", "file specifying Terraform input variables, in either HCL or JSON format")
 	rootCmd.PersistentFlags().StringVarP(&targetDir, "target-dir", "d", "iac", "target directory where code is outputted")
-	rootCmd.PersistentFlags().StringVarP(&templateURL, "template", "t", "https://github.com/turnerlabs/terraform-ecs-fargate/archive/v0.2.0.zip", "URL of a compatible Terraform template")
+	rootCmd.PersistentFlags().StringVarP(&templateURL, "template", "t", "https://github.com/turnerlabs/terraform-ecs-fargate/archive/v0.4.1.zip", "URL of a compatible Terraform template")
+	rootCmd.PersistentFlags().BoolVarP(&yesUseDefaults, "yes", "y", false, "don't ask questions and use defaults")
 }
 
 type scaffoldContext struct {
@@ -42,22 +51,23 @@ type scaffoldContext struct {
 	Profile   string
 	AccountID string
 	Region    string
+	Format    string
 }
 
 func run(cmd *cobra.Command, args []string) {
 
 	//validate that input varFile exists
 	if _, err := os.Stat(varFile); os.IsNotExist(err) {
-		fmt.Printf("Can't find %s. Use the --file flag to specify a .tfvars file \n", varFile)
+		fmt.Printf("Can't find %s. Use the --file flag to specify a .tfvars or .json file \n", varFile)
 		os.Exit(-1)
 	}
 
 	//parse app, env, profile from input file
 	fileBits, err := ioutil.ReadFile(varFile)
 	check(err)
-	app, env, profile, region, err := parseInputVars(string(fileBits))
+	varFormat := strings.ToLower(filepath.Ext(varFile))
+	app, env, profile, region, err := parseInputVars(varFormat, string(fileBits))
 	check(err)
-
 	fmt.Printf("scaffolding %s %s\n", app, env)
 
 	//lookup aws account id using profile
@@ -80,6 +90,7 @@ func run(cmd *cobra.Command, args []string) {
 		Profile:   profile,
 		Region:    region,
 		AccountID: accountID,
+		Format:    varFormat,
 	}
 
 	//scaffold out project environment

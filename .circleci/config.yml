@@ -1,0 +1,32 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: quay.io/turner/fargate-cli-build
+    working_directory: /go/src/github.com/turnerlabs/fargate-create
+    steps:
+      - checkout
+      - run: 
+          name: download dependencies
+          command: dep ensure -v
+      - run: 
+          name: run tests
+          command: make test
+      - run:
+          name: multi-platform build (for develop and master)
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ] || [ "${CIRCLE_BRANCH}" == "develop" ]; then
+              make dist
+            fi
+      - run:
+          name: deploy develop to github pre-release
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "develop" ]; then
+              make prerelease
+            fi
+      - run:
+          name: deploy master to github release
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              make release
+            fi

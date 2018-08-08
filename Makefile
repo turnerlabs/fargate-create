@@ -8,7 +8,6 @@ test:
 
 build:
 	make clean
-	git checkout .gitignore .dockerignore
 	go build -v
 
 dist:
@@ -23,5 +22,6 @@ release:
 	ghr -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} --replace `git describe --tags` dist/
 
 clean:
+	rm fargate-create
 	rm -rf iac
 	rm -rf fargate-create-template

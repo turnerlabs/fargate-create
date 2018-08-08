@@ -43,7 +43,7 @@ provider "aws" {
 func TestParseInputVars(t *testing.T) {
 
 	tf := `
-	region = "us-east-1"
+	region = "us-east-2"
 
 	aws_profile = "default"
 	
@@ -63,12 +63,12 @@ func TestParseInputVars(t *testing.T) {
 	
 	internal = "true"
 `
-
-	app, env, profile, err := parseInputVars(tf)
+	app, env, profile, region, err := parseInputVars(varFormatHCL, tf)
 
 	t.Log(app)
 	t.Log(env)
 	t.Log(profile)
+	t.Log(region)
 	if err != nil {
 		t.Error(err)
 	}
@@ -83,6 +83,56 @@ func TestParseInputVars(t *testing.T) {
 	}
 	expected = "default"
 	if profile != expected {
+		t.Errorf("expected: %s; actual: %s", expected, profile)
+	}
+	expected = "us-east-2"
+	if region != expected {
+		t.Errorf("expected: %s; actual: %s", expected, profile)
+	}
+}
+
+func TestParseInputVars_JSON(t *testing.T) {
+
+	tf := `{
+  "region": "us-east-2",
+	"aws_profile": "default",	
+	"saml_role": "devops",	
+	"app": "my-app",	
+	"environment": "qa",	
+	"tags": {
+		"application": "",
+		"environment": "dev",
+		"team": "",
+		"customer": "",
+		"contact-email": ""
+	},	
+	"internal": true
+}
+`
+	app, env, profile, region, err := parseInputVars(varFormatJSON, tf)
+
+	t.Log(app)
+	t.Log(env)
+	t.Log(profile)
+	t.Log(region)
+	if err != nil {
+		t.Error(err)
+	}
+
+	expected := "my-app"
+	if app != expected {
+		t.Errorf("expected: %s; actual: %s", expected, app)
+	}
+	expected = "qa"
+	if env != expected {
+		t.Errorf("expected: %s; actual: %s", expected, env)
+	}
+	expected = "default"
+	if profile != expected {
+		t.Errorf("expected: %s; actual: %s", expected, profile)
+	}
+	expected = "us-east-2"
+	if region != expected {
 		t.Errorf("expected: %s; actual: %s", expected, profile)
 	}
 }

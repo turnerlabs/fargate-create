@@ -58,7 +58,6 @@
   revision = "d5fe4b57a186c716b0e00b8c301cbd9b4182694d"
 
 [[projects]]
-  branch = "master"
   name = "github.com/hashicorp/go-getter"
   packages = [
     ".",
@@ -123,13 +122,15 @@
   revision = "0c6b41e72360850ca4f98dc341fd999726ea007f"
   version = "v0.5.4"
 
+[[projects]]
+  name = "gopkg.in/yaml.v2"
+  packages = ["."]
+  revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
+  version = "v2.2.1"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-<<<<<<< HEAD
-  inputs-digest = "7ce16ef918a080357eaf783c31ae30730077f0ce98ab8b7f42a3aea693c1758d"
-=======
-  inputs-digest = "bc04c779ff9ce081ffc8050feff789a47fb9e2b11c741add0fc7cec10ba3c575"
->>>>>>> remove-application
+  inputs-digest = "49fc4592f370732218f5cdea99b6bc1826056bcb685815fd67e29c9eb2813504"
   solver-name = "gps-cdcl"
   solver-version = 1
