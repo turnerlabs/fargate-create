@@ -27,24 +27,18 @@ region = "us-east-1"
 aws_profile = "default"
 app = "my-app"
 environment = "dev"
+tags = {
+  application = "my-app"
+  environment = "dev"
+}
 internal = "true"
 container_name = "app"
 container_port = "8080"
-lb_port = "80"
-lb_protocol = "HTTP"
-replicas = "1"
 health_check = "/health"
-health_check_interval = "10"
-health_check_timeout = "5"
-health_check_matcher = "200-299"
-vpc = "xyz"
-private_subnets = "xyz,abc"
-public_subnets = "def,ghi"
-saml_role = "devops"
-tags = {
-  app = "my-app"
-  env = "dev"
-}
+replicas = "1"
+vpc = "vpc-123"
+private_subnets = "subnet-123,subnet-456"
+public_subnets = "subnet-789,subnet-012"
 ```
 
 ```shell
