@@ -17,6 +17,7 @@ const (
 	templateConfigFile = "fargate-create.yml"
 	varFormatHCL       = ".tfvars"
 	varFormatJSON      = ".json"
+	defaultTemplate    = "https://github.com/turnerlabs/terraform-ecs-fargate/archive/v0.4.3.zip"
 )
 
 var verbose bool
@@ -41,7 +42,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
 	rootCmd.PersistentFlags().StringVarP(&varFile, "file", "f", "terraform.tfvars", "file specifying Terraform input variables, in either HCL or JSON format")
 	rootCmd.PersistentFlags().StringVarP(&targetDir, "target-dir", "d", "iac", "target directory where code is outputted")
-	rootCmd.PersistentFlags().StringVarP(&templateURL, "template", "t", "https://github.com/turnerlabs/terraform-ecs-fargate/archive/v0.4.1.zip", "URL of a compatible Terraform template")
+	rootCmd.PersistentFlags().StringVarP(&templateURL, "template", "t", defaultTemplate, "URL of a compatible Terraform template")
 	rootCmd.PersistentFlags().BoolVarP(&yesUseDefaults, "yes", "y", false, "don't ask questions and use defaults")
 }
 
