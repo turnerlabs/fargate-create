@@ -45,7 +45,7 @@ tags = {
 $ fargate-create
 scaffolding my-app dev
 Looking up AWS Account ID using profile: default
-downloading terraform template https://github.com/turnerlabs/terraform-ecs-fargate/archive/v0.4.3.zip
+downloading terraform template https://github.com/turnerlabs/terraform-ecs-fargate/archive/v0.4.1.zip
 installing terraform template
 
 done
