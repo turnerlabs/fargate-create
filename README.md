@@ -20,7 +20,7 @@ curl -s get-fargate-create.turnerlabs.io | sh
 
 Assuming you have a project with a [Dockerfile]()...
 
-Specify your template's input parameters in [terraform.tfvars](https://www.terraform.io/docs/configuration/variables.html) (or terraform.json).  The [default web application template's](https://github.com/turnerlabs/terraform-ecs-fargate) input looks something like this. Note: [any Terraform template can be used](#Extensibility)
+Specify your template's input parameters in [terraform.tfvars](https://www.terraform.io/docs/configuration/variables.html) (or terraform.json).  The [default web application template's](https://github.com/turnerlabs/terraform-ecs-fargate) input looks something like this. Note: [any Terraform template can be used](#extensibility)
 
 ```hcl
 # app/env to scaffold
