@@ -108,7 +108,7 @@ func downloadTerraformTemplate() string {
 	client := getter.Client{
 		Src:  templateURL,
 		Dst:  "./" + tempDir,
-		Mode: getter.ClientModeDir,
+		Mode: getter.ClientModeAny,
 	}
 
 	fmt.Println("downloading terraform template", templateURL)
@@ -116,10 +116,7 @@ func downloadTerraformTemplate() string {
 	check(err)
 	debug("done")
 
-	templateDir, err := getter.SubdirGlob(client.Dst, "*")
-	check(err)
-
-	return templateDir
+	return client.Dst
 }
 
 //installs a template for the specified environment and returns a scaffoldTemplate
