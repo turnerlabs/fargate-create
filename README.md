@@ -20,30 +20,25 @@ curl -s get-fargate-create.turnerlabs.io | sh
 
 Assuming you have a project with a [Dockerfile]()...
 
-Specify your template's input parameters in [terraform.tfvars](https://www.terraform.io/docs/configuration/variables.html) (or terraform.json).  The [default web application template's](https://github.com/turnerlabs/terraform-ecs-fargate) input looks something like this.
+Specify your template's input parameters in [terraform.tfvars](https://www.terraform.io/docs/configuration/variables.html) (or terraform.json).  The [default web application template's](https://github.com/turnerlabs/terraform-ecs-fargate) input looks something like this. Note: [any Terraform template can be used](#extensibility)
 
 ```hcl
-region = "us-east-1"
-aws_profile = "default"
+# app/env to scaffold
 app = "my-app"
 environment = "dev"
+
 internal = "true"
-container_name = "app"
 container_port = "8080"
-lb_port = "80"
-lb_protocol = "HTTP"
 replicas = "1"
 health_check = "/health"
-health_check_interval = "10"
-health_check_timeout = "5"
-health_check_matcher = "200-299"
-vpc = "xyz"
-private_subnets = "xyz,abc"
-public_subnets = "def,ghi"
-saml_role = "devops"
+region = "us-east-1"
+aws_profile = "default"
+vpc = "vpc-123"
+private_subnets = "subnet-123,subnet-456"
+public_subnets = "subnet-789,subnet-012"
 tags = {
-  app = "my-app"
-  env = "dev"
+  application = "my-app"
+  environment = "dev"
 }
 ```
 
@@ -51,13 +46,13 @@ tags = {
 $ fargate-create
 scaffolding my-app dev
 Looking up AWS Account ID using profile: default
-downloading terraform template https://github.com/turnerlabs/terraform-ecs-fargate/archive/v0.2.0.zip
+downloading terraform template git@github.com:turnerlabs/terraform-ecs-fargate
 installing terraform template
 
 done
 ```
 
-Now you have all the files you need to spin up something in Fargate.
+Now you have all the files you need to spin up something in Fargate. Note that the Terraform files can be edited or customized. You can also use your own Terraform template using the `--template` flag.
 
 Infrastructure:  provision using Terraform
 ```shell
@@ -80,7 +75,7 @@ To scaffold out additional environnments, simply change the `environment` input 
 $ fargate-create
 scaffolding my-app prod
 Looking up AWS Account ID using profile: default
-downloading terraform template https://github.com/turnerlabs/terraform-ecs-fargate/archive/v0.2.0.zip
+downloading terraform template git@github.com:turnerlabs/terraform-ecs-fargate
 installing terraform template
 iac/base already exists, ignoring
 
@@ -103,6 +98,48 @@ You'll end up with a directory structure that looks something like this:
 | | |____prod
 ```
 
+### Help
+
+```
+Scaffold out new AWS ECS/Fargate applications based on Terraform templates and Fargate CLI
+
+Usage:
+  fargate-create [flags]
+
+Examples:
+
+# Scaffold an environment using the latest default template
+fargate-create
+
+# Do not prompt for options
+fargate-create -y
+
+# Use a template stored in github
+fargate-create -t git@github.com:turnerlabs/terraform-ecs-fargate?ref=v0.4.3
+
+# Use a template stored in s3
+AWS_ACCESS_KEY=xyz AWS_SECRET_KEY=xyz AWS_REGION=us-east-1 \
+  fargate-create -t s3::https://s3.amazonaws.com/my-bucket/my-template
+	
+# Use a template stored in your file system
+fargate-create -t ~/my-template
+
+# Use a specific input file
+fargate-create -f app.tfvars
+
+# Use a JSON input file
+fargate-create -f app.json
+
+
+Flags:
+  -f, --file string         file specifying Terraform input variables, in either HCL or JSON format (default "terraform.tfvars")
+  -h, --help                help for fargate-create
+  -d, --target-dir string   target directory where code is outputted (default "iac")
+  -t, --template string     URL of a compatible Terraform template (default "git@github.com:turnerlabs/terraform-ecs-fargate")
+  -v, --verbose             Verbose output
+  -y, --yes                 don't ask questions and use defaults
+```
+
 
 ### CI/CD (coming soon)
 
@@ -114,11 +151,18 @@ $ fargate-create build circleciv2
 
 ### Extensibility
 
-`fargate-create` can scaffold out any Terraform template (specified by `-t`) that meets the following requirements:
+`fargate-create` can scaffold out any Terraform template (specified by `--template`) that meets the following requirements:
 
 - `base` and `env/dev` directory structure 
 - a `env/dev/main.tf` with an s3 remote state backend
 - `app` and `environment` input variables
+
+Your template can be downloaded from a variety of locations using a variety of protocols.  The following are supported:
+
+- Local files (`~/my-template`)
+- Git (`git@github.com:my-org/my-template`)
+- Amazon S3 (`s3::https://s3.amazonaws.com/my-bucket/my-template`)
+- HTTP (`http://server/my-template/`)
 
 Optionally:
 
