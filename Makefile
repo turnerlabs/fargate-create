@@ -3,8 +3,7 @@
 PACKAGES := $(shell go list ./... | grep -v /mock)
 BUILD_VERSION := $(shell git describe --tags)
 
-build: deps
-	make clean
+build: deps clean
 	go build -v
 
 deps:
@@ -28,7 +27,7 @@ release: ghr dist
 	ghr -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} --replace `git describe --tags` dist/
 
 clean:
-	rm fargate-create
+	rm -f fargate-create
 	rm -rf iac
 	rm -rf fargate-create-template
 
