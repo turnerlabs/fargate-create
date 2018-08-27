@@ -28,3 +28,6 @@ clean:
 	rm fargate-create
 	rm -rf iac
 	rm -rf fargate-create-template
+
+install: build
+	cp -p fargate-create /usr/local/bin/
