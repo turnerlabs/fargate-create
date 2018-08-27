@@ -8,7 +8,7 @@ build: deps
 	go build -v
 
 deps:
-	go get -insecure gopkg.in/yaml.v2
+	go get -insecure gopkg.in/yaml.v2 github.com/aws/aws-sdk-go/aws/session github.com/aws/aws-sdk-go/service/sts github.com/spf13/cobra github.com/hashicorp/go-getter
 
 test: deps
 	go test -race -cover $(PACKAGES)
