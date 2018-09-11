@@ -98,6 +98,14 @@ You'll end up with a directory structure that looks something like this:
 | | |____prod
 ```
 
+### Stacks
+
+The following stacks are popular configurations that can be used with `fargate-create`
+
+- [Web Application (ALB - HTTP/HTTPS)](examples/ALB)
+- [Network Application (NLB)](examples/NLB)
+ 
+
 ### Help
 
 ```
