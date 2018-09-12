@@ -102,8 +102,8 @@ You'll end up with a directory structure that looks something like this:
 
 The following stacks are popular configurations that can be used with `fargate-create`
 
-- [Web Application (ALB - HTTP/HTTPS)](examples/ALB)
-- [Network Application (NLB)](examples/NLB)
+- [Web Application (ALB - HTTP/HTTPS)](https://github.com/turnerlabs/terraform-ecs-fargate#fargate-create)
+- [Network Application (NLB)](https://github.com/turnerlabs/terraform-ecs-fargate-nlb#fargate-create)
  
 
 ### Help
