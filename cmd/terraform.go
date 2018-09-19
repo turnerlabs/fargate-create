@@ -57,7 +57,7 @@ func parseInputVarsHCL(tf string) (string, string, string, string, error) {
 	for _, line := range lines {
 		trimmed := strings.TrimSpace(line)
 		//ignore whitespace and comments
-		if trimmed == "" || strings.HasPrefix(trimmed, "//") {
+		if trimmed == "" || strings.HasPrefix(trimmed, "//") || strings.HasPrefix(trimmed, "#") {
 			continue
 		}
 		if trimmed == "tags = {" {
@@ -75,7 +75,14 @@ func parseInputVarsHCL(tf string) (string, string, string, string, error) {
 		if len(parts) == 2 {
 			key := strings.TrimSpace(parts[0])
 			value := strings.TrimSpace(parts[1])
+
+			//remove quotes (app = "foo")
 			value = strings.Replace(value, `"`, "", -1)
+
+			//remove trailing comments (app = "foo" #comment)
+			comments := strings.Split(value, "#")
+			value = strings.TrimSpace(comments[0])
+
 			if key == "app" {
 				app = value
 			}
