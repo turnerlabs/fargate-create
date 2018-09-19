@@ -272,16 +272,31 @@ service: {{.App}}-{{.Env}}
 }
 
 func getDockerComposeYml(context *scaffoldContext) string {
-	t := `version: "3.4"
+
+	//only add docker ports if container_port context variable is specified
+	var t string
+	if context.ContainerPort != "" {
+		t = `version: "2"
 services:
 	{{.App}}:
 		build: ../../../
 		image: {{.AccountID}}.dkr.ecr.{{.Region}}.amazonaws.com/{{.App}}:0.1.0
 		ports:    
-		- 80:8080
+		- 80:{{.ContainerPort}}
 		env_file:
 		- hidden.env	
 `
+	} else {
+		t = `version: "2"
+services:
+	{{.App}}:
+		build: ../../../
+		image: {{.AccountID}}.dkr.ecr.{{.Region}}.amazonaws.com/{{.App}}:0.1.0
+		env_file:
+		- hidden.env	
+`
+
+	}
 	return applyTemplate(t, context)
 }
 

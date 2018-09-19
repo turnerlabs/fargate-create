@@ -70,12 +70,13 @@ func init() {
 }
 
 type scaffoldContext struct {
-	App       string
-	Env       string
-	Profile   string
-	AccountID string
-	Region    string
-	Format    string
+	App           string
+	Env           string
+	Profile       string
+	AccountID     string
+	Region        string
+	Format        string
+	ContainerPort string
 }
 
 func run(cmd *cobra.Command, args []string) {
@@ -90,7 +91,7 @@ func run(cmd *cobra.Command, args []string) {
 	fileBits, err := ioutil.ReadFile(varFile)
 	check(err)
 	varFormat := strings.ToLower(filepath.Ext(varFile))
-	app, env, profile, region, err := parseInputVars(varFormat, string(fileBits))
+	app, env, profile, region, containerPort, err := parseInputVars(varFormat, string(fileBits))
 	check(err)
 	fmt.Printf("scaffolding %s %s\n", app, env)
 
@@ -109,12 +110,13 @@ func run(cmd *cobra.Command, args []string) {
 
 	//set context for scaffolder
 	context := scaffoldContext{
-		App:       app,
-		Env:       env,
-		Profile:   profile,
-		Region:    region,
-		AccountID: accountID,
-		Format:    varFormat,
+		App:           app,
+		Env:           env,
+		Profile:       profile,
+		Region:        region,
+		AccountID:     accountID,
+		Format:        varFormat,
+		ContainerPort: containerPort,
 	}
 
 	//scaffold out project environment
