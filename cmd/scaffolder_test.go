@@ -80,7 +80,7 @@ func TestIgnoreSensitiveFiles_Existing_Multiple(t *testing.T) {
 	}
 
 	//test
-	ignored := []string{"foo","baz"}
+	ignored := []string{"foo", "baz"}
 	ensureFileContains(file, ignored)
 
 	//assert
@@ -117,4 +117,46 @@ func setupTestCase(t *testing.T) func(t *testing.T) {
 		//delete
 		os.RemoveAll(tmpDir)
 	}
+}
+
+func TestDockerComposeYml_Port(t *testing.T) {
+
+	context := scaffoldContext{
+		AccountID:     "abc",
+		App:           "my-app",
+		ContainerPort: "3000",
+		Env:           "dev",
+		Profile:       "default",
+		Region:        "us-east-1",
+		Format:        ".tfvars",
+	}
+
+	yml := getDockerComposeYml(&context)
+	t.Log(yml)
+
+	expected := "- 80:3000"
+	if !strings.Contains(yml, expected) {
+		t.Errorf("expected: %s; actual: %s", expected, yml)
+	}
+}
+
+func TestDockerComposeYml_NoPort(t *testing.T) {
+
+	context := scaffoldContext{
+		AccountID:     "abc",
+		App:           "my-app",
+		ContainerPort: "",
+		Env:           "dev",
+		Profile:       "default",
+		Region:        "us-east-1",
+		Format:        ".tfvars",
+	}
+
+	yml := getDockerComposeYml(&context)
+	t.Log(yml)
+
+	notexpected := "- 80:"
+	if strings.Contains(yml, notexpected) {
+		t.Errorf("not expected: %s; actual: %s", notexpected, yml)
+	}	
 }
