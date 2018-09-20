@@ -7,17 +7,17 @@ import (
 	"strings"
 )
 
-func parseInputVars(format string, input string) (string, string, string, string, error) {
+func parseInputVars(format string, input string) (string, string, string, string, string, error) {
 	if format == varFormatHCL {
 		return parseInputVarsHCL(input)
 	}
 	if format == varFormatJSON {
 		return parseInputVarsJSON(input)
 	}
-	return "", "", "", "", errors.New(`unknown var format: "` + format + `"`)
+	return "", "", "", "", "", errors.New(`unknown var format: "` + format + `"`)
 }
 
-func parseInputVarsJSON(input string) (string, string, string, string, error) {
+func parseInputVarsJSON(input string) (string, string, string, string, string, error) {
 	var data map[string]interface{}
 
 	err := json.Unmarshal([]byte(input), &data)
@@ -27,29 +27,31 @@ func parseInputVarsJSON(input string) (string, string, string, string, error) {
 	environment := data["environment"].(string)
 	profile := data["aws_profile"].(string)
 	region := data["region"].(string)
+	containerPort := data["container_port"].(string)
 
 	//did we find it?
 	if app == "" {
-		return "", "", "", "", errors.New(`missing variable: "app"`)
+		return "", "", "", "", "", errors.New(`missing variable: "app"`)
 	}
 	if environment == "" {
-		return "", "", "", "", errors.New(`missing variable: "environment"`)
+		return "", "", "", "", "", errors.New(`missing variable: "environment"`)
 	}
 	if profile == "" {
-		return "", "", "", "", errors.New(`missing variable: "profile"`)
+		return "", "", "", "", "", errors.New(`missing variable: "profile"`)
 	}
 	if region == "" {
-		return "", "", "", "", errors.New(`missing variable: "region"`)
+		return "", "", "", "", "", errors.New(`missing variable: "region"`)
 	}
 
-	return app, environment, profile, region, nil
+	return app, environment, profile, region, containerPort, nil
 }
 
-func parseInputVarsHCL(tf string) (string, string, string, string, error) {
+func parseInputVarsHCL(tf string) (string, string, string, string, string, error) {
 	app := ""
 	environment := ""
 	profile := ""
 	region := ""
+	containerPort := ""
 
 	//look for variables
 	lines := strings.Split(tf, "\n")
@@ -95,24 +97,27 @@ func parseInputVarsHCL(tf string) (string, string, string, string, error) {
 			if key == "region" {
 				region = value
 			}
+			if key == "container_port" {
+				containerPort = value
+			}
 		}
 	}
 
 	//did we find it?
 	if app == "" {
-		return "", "", "", "", errors.New(`missing variable: "app"`)
+		return "", "", "", "", "", errors.New(`missing variable: "app"`)
 	}
 	if environment == "" {
-		return "", "", "", "", errors.New(`missing variable: "environment"`)
+		return "", "", "", "", "", errors.New(`missing variable: "environment"`)
 	}
 	if profile == "" {
-		return "", "", "", "", errors.New(`missing variable: "profile"`)
+		return "", "", "", "", "", errors.New(`missing variable: "profile"`)
 	}
 	if region == "" {
-		return "", "", "", "", errors.New(`missing variable: "region"`)
+		return "", "", "", "", "", errors.New(`missing variable: "region"`)
 	}
 
-	return app, environment, profile, region, nil
+	return app, environment, profile, region, containerPort, nil
 }
 
 func updateTerraformBackend(tf string, profile string, app string, env string) string {
