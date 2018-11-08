@@ -105,6 +105,7 @@ The following stacks are popular configurations that can be used with `fargate-c
 - [Web Application (ALB - HTTP/HTTPS)](https://github.com/turnerlabs/terraform-ecs-fargate#fargate-create)
 - [Network Application (NLB)](https://github.com/turnerlabs/terraform-ecs-fargate-nlb#fargate-create)
 - [Background Worker](https://github.com/turnerlabs/terraform-ecs-fargate-background-worker#fargate-create)
+- [Scheduled Task](https://github.com/turnerlabs/terraform-ecs-fargate-scheduled-task#fargate-create)
  
 
 ### Help
