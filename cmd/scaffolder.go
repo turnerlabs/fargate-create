@@ -22,8 +22,13 @@ type templateDirectory struct {
 	Installed     bool
 }
 
+const templateTypeService = "Service"
+const templateTypeScheduledTask = "ScheduledTask"
+const defaultTemplateType = templateTypeService
+
 type templateConfig struct {
-	Prompts []*prompt `yaml:"prompts"`
+	TemplateType string    `yaml:"templateType"`
+	Prompts      []*prompt `yaml:"prompts"`
 }
 
 type prompt struct {
@@ -208,6 +213,11 @@ func loadTemplateConfig(dir string) *templateConfig {
 		check(err)
 		err = yaml.Unmarshal(dat, &config)
 		check(err)
+
+		//default template type
+		if config.TemplateType == "" {
+			config.TemplateType = defaultTemplateType
+		}
 	} else {
 		debug("didn't find template config: ", dir)
 	}
@@ -244,14 +254,14 @@ func scaffoldApplication(context *scaffoldContext, t *scaffoldTemplate) {
 	check(err)
 
 	//write a fargate.yml for the cli
-	fargateYml := getFargateYaml(context)
+	fargateYml := getFargateYaml(context, t.Env.Configuration)
 	fargateYmlFile := filepath.Join(targetAppDir, "fargate.yml")
 	debug("writing", fargateYmlFile)
 	err = ioutil.WriteFile(fargateYmlFile, []byte(fargateYml), 0644)
 	check(err)
 
 	//write deploy.sh
-	deployScript := getDeployScript(context)
+	deployScript := getDeployScript(context, t.Env.Configuration)
 	deployScriptFile := filepath.Join(targetAppDir, "deploy.sh")
 	debug("writing", deployScriptFile)
 	err = ioutil.WriteFile(deployScriptFile, []byte(deployScript), 0755)
@@ -264,10 +274,15 @@ func scaffoldApplication(context *scaffoldContext, t *scaffoldTemplate) {
 	ensureFileContains(".dockerignore", ignoredFiles)
 }
 
-func getFargateYaml(context *scaffoldContext) string {
+func getFargateYaml(context *scaffoldContext, config *templateConfig) string {
 	textTemplate := `cluster: {{.App}}-{{.Env}}
-service: {{.App}}-{{.Env}}
+service: {{.App}}-{{.Env}}`
+	if config.TemplateType == templateTypeScheduledTask {
+		textTemplate += `
+task: {{.App}}-{{.Env}}
+rule: {{.App}}-{{.Env}}
 `
+	}
 	return applyTemplate(textTemplate, context)
 }
 
@@ -295,12 +310,11 @@ services:
 		env_file:
 		- hidden.env	
 `
-
 	}
 	return applyTemplate(t, context)
 }
 
-func getDeployScript(context *scaffoldContext) string {
+func getDeployScript(context *scaffoldContext, config *templateConfig) string {
 	t := `#! /bin/bash
 set -e
 
@@ -312,9 +326,20 @@ export AWS_PROFILE={{.Profile}}
 export AWS_DEFAULT_REGION={{.Region}}
 login=$(aws ecr get-login --no-include-email) && eval "$login"
 docker-compose push
+`
 
+	if config.TemplateType == templateTypeService {
+		t += `
 # deploy image and env vars
 fargate service deploy -f docker-compose.yml
 `
+	} else if config.TemplateType == templateTypeScheduledTask {
+		t += `
+# deploy image and env vars
+REVISION=$(fargate task register -f docker-compose.yml)
+fargate events target -r ${REVISION}
+`
+	}
+
 	return applyTemplate(t, context)
 }
