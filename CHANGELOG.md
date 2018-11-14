@@ -1,3 +1,10 @@
+## 0.4.0 (2018-11-14)
+
+### Features
+
+- adds support for scheduled tasks ([#15](https://github.com/turnerlabs/fargate-create/pull/15))
+
+
 ## 0.3.0 (2018-09-20)
 
 ### Features
