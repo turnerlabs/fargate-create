@@ -151,7 +151,7 @@ Flags:
 ```
 
 
-### CI/CD (coming soon)
+### CI/CD
 
 Using this technique, it's easy to codegen CI/CD pipelines for many popular build tools.  The `build` command support this. For example:
 
