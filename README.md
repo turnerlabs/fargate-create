@@ -178,7 +178,7 @@ Optionally:
 
 - add a `fargate-create.yml` ([example here](examples/fargate-create.yml)) to your template to drive custom configuration, prompting for defaults, etc. 
 
-For example (coming soon):
+For [example](https://github.com/turnerlabs/terraform-ecs-fargate-scheduled-task/blob/master/env/dev/fargate-create.yml):
 ```shell
-$ fargate-create -f my-scheduledtask.tfvars -t https://github.com/example/terraform-scheduledtask/archive/v0.1.0.zip
+$ fargate-create -f my-scheduledtask.tfvars -t git@github.com:turnerlabs/terraform-ecs-fargate-scheduled-task
 ```
