@@ -36,14 +36,14 @@ func TestProvider_CircleCIv2(t *testing.T) {
 	t.Log(artifacts[1].FileContents)
 
 	configEnv := fmt.Sprintf(`
-export FARGATE_CLUSTER=%v-%v
-export FARGATE_SERVICE=%v-%v
-export REPO=%v.dkr.ecr.us-east-1.amazonaws.com/%v
-export VERSION=0.1.0	
+export FARGATE_CLUSTER="%v-%v"
+export FARGATE_SERVICE"=%v-%v"
+export REPO="%v.dkr.ecr.us-east-1.amazonaws.com/%v"
+export VERSION="0.1.0"
 	`, ctx.App, ctx.Env, ctx.App, ctx.Env, ctx.Account, ctx.App)
 	t.Log(configEnv)
 
-	if strings.TrimSpace(artifacts[1].FileContents) != strings.TrimSpace(configEnv) {
+	if strings.Contains(strings.TrimSpace(artifacts[1].FileContents), strings.TrimSpace(configEnv)) {
 		t.Errorf("unexpected config.env")
 	}
 }

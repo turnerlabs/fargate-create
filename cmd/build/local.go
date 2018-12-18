@@ -21,7 +21,7 @@ func getLocalBuildScript(context contextTemplate) string {
 set -e
 
 # build image
-IMAGE={{ .Account }}.dkr.ecr.us-east-1.amazonaws.com/{{ .App }}:0.1.0
+IMAGE="{{ .Account }}.dkr.ecr.us-east-1.amazonaws.com/{{ .App }}:0.1.0"
 docker build -t ${IMAGE} .
 
 # push image to ECR repo

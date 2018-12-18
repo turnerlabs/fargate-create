@@ -8,17 +8,13 @@ type CircleCIv2 struct{}
 //ProvideArtifacts is the Provider implementation
 func (provider CircleCIv2) ProvideArtifacts(context Context) ([]*Artifact, error) {
 
-	//output the following:
-	//circleci/config.yml
-	//circleci/config.env
-
 	contextTemplate := getContextTemplate(context)
 
 	artifacts := []*Artifact{}
 	artifacts = append(artifacts, createArtifact(".circleci/config.yml", getCircleCIv2YAML()))
 	artifacts = append(artifacts, createArtifact(".circleci/config.env", getConfigEnv(contextTemplate)))
 
-  fmt.Println()
+	fmt.Println()
 	fmt.Println(`Be sure to supply the following environment variables in your Circle CI build:
   AWS_ACCESS_KEY_ID (terraform state show aws_iam_access_key.cicd_keys)
   AWS_SECRET_ACCESS_KEY (terraform state show aws_iam_access_key.cicd_keys)
@@ -29,7 +25,7 @@ func (provider CircleCIv2) ProvideArtifacts(context Context) ([]*Artifact, error
 }
 
 func getCircleCIv2YAML() string {
-	template := `
+	return `
 version: 2
 jobs:
   build:
@@ -66,15 +62,13 @@ jobs:
       - run:
           name: Deploy
           command: . ${VAR}; fargate service deploy -i ${IMAGE}`
-
-	return template
 }
 
 func getConfigEnv(context contextTemplate) string {
-	textTemplate := `export FARGATE_CLUSTER={{ .App }}-{{ .Env }}
-export FARGATE_SERVICE={{ .App }}-{{ .Env }}
-export REPO={{ .Account }}.dkr.ecr.us-east-1.amazonaws.com/{{ .App }}
-export VERSION=0.1.0	
+	textTemplate := `export FARGATE_CLUSTER="{{ .App }}-{{ .Env }}"
+export FARGATE_SERVICE="{{ .App }}-{{ .Env }}"
+export REPO="{{ .Account }}.dkr.ecr.us-east-1.amazonaws.com/{{ .App }}"
+export VERSION="0.1.0"
 `
 	return applyTemplate(textTemplate, context)
 }

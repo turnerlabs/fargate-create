@@ -48,7 +48,7 @@ func TestProvider_Local(t *testing.T) {
 	}
 	t.Log(artifacts[0].FileContents)
 
-	image := fmt.Sprintf("IMAGE=%v.dkr.ecr.us-east-1.amazonaws.com/%v:0.1.0", ctx.Account, ctx.App)
+	image := fmt.Sprintf(`IMAGE="%v.dkr.ecr.us-east-1.amazonaws.com/%v:0.1.0"`, ctx.Account, ctx.App)
 	if !strings.Contains(artifacts[0].FileContents, image) {
 		t.Errorf("expecting " + image)
 	}
