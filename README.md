@@ -151,9 +151,9 @@ Flags:
 ```
 
 
-### CI/CD (coming soon)
+### CI/CD
 
-Using this technique, it's easy to codegen CI/CD pipelines for many popular build tools.  The `build` command support this. For example:
+Using this technique, it's easy to codegen CI/CD pipelines for many popular build tools.  The `build` command supports this. For example:
 
 ```shell
 $ fargate-create build circleciv2
@@ -178,7 +178,7 @@ Optionally:
 
 - add a `fargate-create.yml` ([example here](examples/fargate-create.yml)) to your template to drive custom configuration, prompting for defaults, etc. 
 
-For example (coming soon):
+An [example](https://github.com/turnerlabs/terraform-ecs-fargate-scheduled-task/) of an extended template:
 ```shell
-$ fargate-create -f my-scheduledtask.tfvars -t https://github.com/example/terraform-scheduledtask/archive/v0.1.0.zip
+$ fargate-create -f my-scheduledtask.tfvars -t git@github.com:turnerlabs/terraform-ecs-fargate-scheduled-task
 ```

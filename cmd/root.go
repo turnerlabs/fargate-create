@@ -25,11 +25,13 @@ var varFile string
 var targetDir string
 var templateURL string
 var yesUseDefaults bool
+var context scaffoldContext
 
 var rootCmd = &cobra.Command{
 	Use:   "fargate-create",
 	Short: "Scaffold out new AWS ECS/Fargate applications based on Terraform templates and Fargate CLI",
 	Run:   run,
+	PersistentPreRun: persistentPreRun,
 	Example: `
 # Scaffold an environment using the latest default template
 fargate-create
@@ -39,6 +41,9 @@ fargate-create -y
 
 # Use a template stored in github
 fargate-create -t git@github.com:turnerlabs/terraform-ecs-fargate?ref=v0.4.3
+
+# Scaffold out files for various build systems
+fargate-create build circleciv2
 
 # Use a template stored in s3
 AWS_ACCESS_KEY=xyz AWS_SECRET_KEY=xyz AWS_REGION=us-east-1 \
@@ -79,7 +84,20 @@ type scaffoldContext struct {
 	ContainerPort string
 }
 
-func run(cmd *cobra.Command, args []string) {
+func (context scaffoldContext) GetApp() string {
+	return context.App
+}
+
+func (context scaffoldContext) GetEnvironment() string {
+	return context.Env
+}
+
+func (context scaffoldContext) GetAccount() string {
+	return context.AccountID
+}
+
+//gets run before every command
+func persistentPreRun(cmd *cobra.Command, args []string) {
 
 	//validate that input varFile exists
 	if _, err := os.Stat(varFile); os.IsNotExist(err) {
@@ -109,7 +127,7 @@ func run(cmd *cobra.Command, args []string) {
 	}
 
 	//set context for scaffolder
-	context := scaffoldContext{
+	context = scaffoldContext{
 		App:           app,
 		Env:           env,
 		Profile:       profile,
@@ -118,6 +136,9 @@ func run(cmd *cobra.Command, args []string) {
 		Format:        varFormat,
 		ContainerPort: containerPort,
 	}
+}
+
+func run(cmd *cobra.Command, args []string) {
 
 	//scaffold out project environment
 	scaffold(&context)
