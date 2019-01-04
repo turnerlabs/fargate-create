@@ -15,7 +15,7 @@ jobs:
       - run:
           name: multi-platform build (for develop and master)
           command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ] || [ "${CIRCLE_BRANCH}" == "develop" ]; then
+            if [ "${CIRCLE_BRANCH}" == "master" ] || [ "${CIRCLE_BRANCH}" == "host-binary-s3" ]; then
               make dist
             fi
       - run:
