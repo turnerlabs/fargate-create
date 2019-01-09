@@ -1,3 +1,11 @@
+## 0.5.0 (2019-01-09)
+
+### Features
+
+- New `build` command framework with support for Circle CI ([#16](https://github.com/turnerlabs/fargate-create/pull/16))
+- Release binaries now hosted in s3 ([#18](https://github.com/turnerlabs/fargate-create/pull/18))
+
+
 ## 0.4.0 (2018-11-14)
 
 ### Features
