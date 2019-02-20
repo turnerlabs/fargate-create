@@ -35,9 +35,6 @@ func doUpgrade(cmd *cobra.Command, args []string) {
 
 	//has the user done a previous install?
 	notFound := false
-	if _, err := os.Stat(targetDir); err != nil {
-		notFound = true
-	}
 	if _, err := os.Stat(filepath.Join(targetDir, baseDir)); err != nil {
 		notFound = true
 	}
@@ -64,14 +61,28 @@ func doUpgrade(cmd *cobra.Command, args []string) {
 	for _, o := range objects {
 		if o.IsDir() {
 			destDir = filepath.Join(targetDir, envDir, o.Name())
+			debug(destDir)
+
+			//look for default terraform.tfvars file for this environment
+			tfVarsFile := filepath.Join(destDir, "terraform.tfvars")
+			debug(tfVarsFile)
+			if _, err = os.Stat(tfVarsFile); os.IsNotExist(err) {
+				check(errors.New(tfVarsFile + " not found"))
+			}
+
+			fileBits, err := ioutil.ReadFile(tfVarsFile)
+			check(err)
+			varFormat := strings.ToLower(filepath.Ext(tfVarsFile))
+			app, env, profile, _, _, err := parseInputVars(varFormat, string(fileBits))
+			check(err)
 
 			//apply env transformation in src before upgrading
-			transformMainTFToContext(srcDir, context.Profile, context.App, context.Env)
+			transformMainTFToContext(srcDir, profile, app, env)
 
 			//upgrade env directory
 			a, u := upgradeDirectory(srcDir, destDir)
-			adds += a
-			updates += u
+			adds = append(adds, a...)
+			updates = append(updates, u...)
 		}
 	}
 
@@ -80,8 +91,20 @@ func doUpgrade(cmd *cobra.Command, args []string) {
 
 	fmt.Println()
 	fmt.Println("---------------------------------------")
-	fmt.Println("upgrade complete")
-	if adds > 0 || updates > 0 {
+	fmt.Printf("upgrade complete: %v add(s), %v update(s)\n", len(adds), len(updates))
+	if len(adds) > 0 || len(updates) > 0 {
+		fmt.Println()
+		fmt.Println("updated files:")
+		fmt.Println()
+		for _, s := range updates {
+			fmt.Printf("\t%s\n", s)
+		}
+		fmt.Println()
+		fmt.Println("added files:")
+		fmt.Println()
+		for _, s := range adds {
+			fmt.Printf("\t%s\n", s)
+		}
 		fmt.Println()
 		fmt.Println(`run the following commands to apply these changes:
 terraform init -upgrade=true
@@ -89,7 +112,7 @@ terraform apply`)
 	}
 }
 
-func upgradeDirectory(srcDir string, destDir string) (int, int) {
+func upgradeDirectory(srcDir string, destDir string) ([]string, []string) {
 
 	//prompt for updates to existing local files
 	//add new required files
@@ -100,14 +123,15 @@ func upgradeDirectory(srcDir string, destDir string) (int, int) {
 	fmt.Println("upgrading", destDir)
 	fmt.Println("---------------------------------------")
 
-	updates := 0
-	adds := 0
+	updates := []string{}
+	adds := []string{}
 
 	//iterate src files
 	files, err := ioutil.ReadDir(srcDir)
 	check(err)
 	for _, f := range files {
 		file := f.Name()
+		debug(file)
 
 		//only process .tf or .md files
 		if !(strings.HasSuffix(file, ".tf") || strings.HasSuffix(file, ".md")) {
@@ -139,13 +163,13 @@ func upgradeDirectory(srcDir string, destDir string) (int, int) {
 						if containsString(okayResponses, response) {
 							err = copyFile(source, dest)
 							check(err)
-							adds++
+							adds = append(adds, dest)
 						}
 					} else {
 						//write new required file
 						fmt.Println("writing", dest)
 						copyFile(source, dest)
-						adds++
+						adds = append(adds, dest)
 					}
 				} else {
 					debug("no template config file found")
@@ -159,7 +183,7 @@ func upgradeDirectory(srcDir string, destDir string) (int, int) {
 					if containsString(okayResponses, response) {
 						err = copyFile(source, dest)
 						check(err)
-						updates++
+						updates = append(updates, dest)
 					}
 				} else {
 					debug("files match")

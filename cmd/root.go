@@ -103,6 +103,10 @@ func (context scaffoldContext) GetAccount() string {
 //gets run before every command
 func persistentPreRun(cmd *cobra.Command, args []string) {
 
+	if !(cmd.Name() == "fargate-create" || cmd.Name() == "build") {
+		return
+	}
+
 	//validate that input varFile exists
 	if _, err := os.Stat(varFile); os.IsNotExist(err) {
 		fmt.Printf("Can't find %s. Use the --file flag to specify a .tfvars or .json file \n", varFile)

@@ -18,6 +18,10 @@ var nokayResponses = []string{"n", "N", "no", "No", "NO"}
 
 func check(e error) {
 	if e != nil {
+
+		//clean up before exiting
+		os.RemoveAll(tempDir)
+
 		log.Fatal("ERROR: ", e)
 	}
 }
