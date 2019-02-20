@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	getter "github.com/hashicorp/go-getter"
-	"gopkg.in/yaml.v2"
+	yaml "gopkg.in/yaml.v2"
 )
 
 type scaffoldTemplate struct {
@@ -25,6 +25,9 @@ type templateDirectory struct {
 const templateTypeService = "Service"
 const templateTypeScheduledTask = "ScheduledTask"
 const defaultTemplateType = templateTypeService
+const baseDir = "base"
+const envDir = "env"
+const devDir = "dev"
 
 type templateConfig struct {
 	TemplateType string    `yaml:"templateType"`
@@ -97,14 +100,18 @@ func scaffoldInfrastructure(context *scaffoldContext) *scaffoldTemplate {
 	check(err)
 
 	//update tf backend in main.tf to match app/env
-	mainTfFile := filepath.Join(result.Env.Directory, "main.tf")
-	fileBits, err := ioutil.ReadFile(mainTfFile)
-	check(err)
-	maintf := updateTerraformBackend(string(fileBits), context.Profile, context.App, context.Env)
-	err = ioutil.WriteFile(mainTfFile, []byte(maintf), 0644)
-	check(err)
+	transformMainTFToContext(result.Env.Directory, context.Profile, context.App, context.Env)
 
 	return result
+}
+
+func transformMainTFToContext(dir string, profile string, app string, env string) {
+	mainTfFile := filepath.Join(dir, "main.tf")
+	fileBits, err := ioutil.ReadFile(mainTfFile)
+	check(err)
+	maintf := updateTerraformBackend(string(fileBits), profile, app, env)
+	err = ioutil.WriteFile(mainTfFile, []byte(maintf), 0644)
+	check(err)
 }
 
 //fetches and installs the tf template and returns the output directory
@@ -121,7 +128,7 @@ func downloadTerraformTemplate() string {
 	check(err)
 	debug("done")
 
-	return client.Dst
+	return tempDir
 }
 
 //installs a template for the specified environment and returns a scaffoldTemplate
@@ -144,7 +151,6 @@ func installTerraformTemplate(templateDir string, environment string) *scaffoldT
 	}
 
 	//copy over infrastructure/base (if not already there)
-	baseDir := "base"
 	sourceBaseDir := filepath.Join(templateDir, baseDir)
 	destBaseDir := filepath.Join(targetInfraDir, baseDir)
 	if _, err := os.Stat(destBaseDir); os.IsNotExist(err) {
@@ -163,8 +169,8 @@ func installTerraformTemplate(templateDir string, environment string) *scaffoldT
 	}
 
 	//if environment directory exists, prompt to override, if no, then exit
-	sourceEnvDir := filepath.Join(templateDir, "env", "dev")
-	destEnvDir := filepath.Join(targetInfraDir, "env", environment)
+	sourceEnvDir := filepath.Join(templateDir, envDir, devDir)
+	destEnvDir := filepath.Join(targetInfraDir, envDir, environment)
 
 	yes := true
 	if _, err := os.Stat(destEnvDir); err == nil {
@@ -220,6 +226,7 @@ func loadTemplateConfig(dir string) *templateConfig {
 		}
 	} else {
 		debug("didn't find template config: ", dir)
+		return nil
 	}
 	return &config
 }
