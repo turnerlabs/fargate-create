@@ -134,7 +134,7 @@ func upgradeDirectory(srcDir string, destDir string) ([]string, []string) {
 		debug(file)
 
 		//only process .tf or .md files
-		if !(strings.HasSuffix(file, ".tf") || strings.HasSuffix(file, ".md")) {
+		if !(strings.HasSuffix(file, ".tf") || strings.HasSuffix(file, ".md") || strings.HasSuffix(file, ".tpl")) {
 			continue
 		}
 
