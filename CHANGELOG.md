@@ -1,3 +1,10 @@
+## 0.6.1 (2019-02-22)
+
+### Features
+
+- Documentation
+
+
 ## 0.6.0 (2019-02-22)
 
 ### Features
