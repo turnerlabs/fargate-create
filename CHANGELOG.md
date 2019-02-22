@@ -1,3 +1,10 @@
+## 0.6.0 (2019-02-22)
+
+### Features
+
+- New `upgrade` command ([#20](https://github.com/turnerlabs/fargate-create/issues/20))
+
+
 ## 0.5.0 (2019-01-09)
 
 ### Features

@@ -13,11 +13,12 @@ import (
 )
 
 const (
-	tempDir            = "fargate-create-template"
-	templateConfigFile = "fargate-create.yml"
-	varFormatHCL       = ".tfvars"
-	varFormatJSON      = ".json"
-	defaultTemplate    = "git@github.com:turnerlabs/terraform-ecs-fargate"
+	tempDir                 = "fargate-create-template"
+	templateConfigFile      = "fargate-create.yml"
+	targetInfrastructureDir = "iac"
+	varFormatHCL            = ".tfvars"
+	varFormatJSON           = ".json"
+	defaultTemplate         = "git@github.com:turnerlabs/terraform-ecs-fargate"
 )
 
 var verbose bool
@@ -28,9 +29,9 @@ var yesUseDefaults bool
 var context scaffoldContext
 
 var rootCmd = &cobra.Command{
-	Use:   "fargate-create",
-	Short: "Scaffold out new AWS ECS/Fargate applications based on Terraform templates and Fargate CLI",
-	Run:   run,
+	Use:              "fargate-create",
+	Short:            "Scaffold out new AWS ECS/Fargate applications based on Terraform templates and Fargate CLI",
+	Run:              run,
 	PersistentPreRun: persistentPreRun,
 	Example: `
 # Scaffold an environment using the latest default template
@@ -44,6 +45,9 @@ fargate-create -t git@github.com:turnerlabs/terraform-ecs-fargate?ref=v0.4.3
 
 # Scaffold out files for various build systems
 fargate-create build circleciv2
+
+# keep your template up to date
+fargate-create upgrade
 
 # Use a template stored in s3
 AWS_ACCESS_KEY=xyz AWS_SECRET_KEY=xyz AWS_REGION=us-east-1 \
@@ -69,7 +73,7 @@ func Execute(version string) {
 func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
 	rootCmd.PersistentFlags().StringVarP(&varFile, "file", "f", "terraform.tfvars", "file specifying Terraform input variables, in either HCL or JSON format")
-	rootCmd.PersistentFlags().StringVarP(&targetDir, "target-dir", "d", "iac", "target directory where code is outputted")
+	rootCmd.PersistentFlags().StringVarP(&targetDir, "target-dir", "d", targetInfrastructureDir, "target directory where code is outputted")
 	rootCmd.PersistentFlags().StringVarP(&templateURL, "template", "t", defaultTemplate, "URL of a compatible Terraform template")
 	rootCmd.PersistentFlags().BoolVarP(&yesUseDefaults, "yes", "y", false, "don't ask questions and use defaults")
 }
@@ -98,6 +102,10 @@ func (context scaffoldContext) GetAccount() string {
 
 //gets run before every command
 func persistentPreRun(cmd *cobra.Command, args []string) {
+
+	if !(cmd.Name() == "fargate-create" || cmd.Name() == "build") {
+		return
+	}
 
 	//validate that input varFile exists
 	if _, err := os.Stat(varFile); os.IsNotExist(err) {
