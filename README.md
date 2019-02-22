@@ -98,6 +98,13 @@ You'll end up with a directory structure that looks something like this:
 | | |____prod
 ```
 
+As changes are made to the various upstream templates over time, the `upgrade` command can be used to keep installed versions up to date.
+
+```bash
+fargate-create upgrade
+```
+
+
 ### Stacks
 
 The following stacks are popular configurations that can be used with `fargate-create`
@@ -115,6 +122,7 @@ Scaffold out new AWS ECS/Fargate applications based on Terraform templates and F
 
 Usage:
   fargate-create [flags]
+  fargate-create [command]
 
 Examples:
 
@@ -127,10 +135,16 @@ fargate-create -y
 # Use a template stored in github
 fargate-create -t git@github.com:turnerlabs/terraform-ecs-fargate?ref=v0.4.3
 
+# Scaffold out files for various build systems
+fargate-create build circleciv2
+
+# keep your template up to date
+fargate-create upgrade
+
 # Use a template stored in s3
 AWS_ACCESS_KEY=xyz AWS_SECRET_KEY=xyz AWS_REGION=us-east-1 \
   fargate-create -t s3::https://s3.amazonaws.com/my-bucket/my-template
-	
+
 # Use a template stored in your file system
 fargate-create -t ~/my-template
 
@@ -141,12 +155,18 @@ fargate-create -f app.tfvars
 fargate-create -f app.json
 
 
+Available Commands:
+  build       Scaffold out artifacts for various build systems
+  help        Help about any command
+  upgrade     Keep a terraform template up to date
+
 Flags:
   -f, --file string         file specifying Terraform input variables, in either HCL or JSON format (default "terraform.tfvars")
   -h, --help                help for fargate-create
   -d, --target-dir string   target directory where code is outputted (default "iac")
   -t, --template string     URL of a compatible Terraform template (default "git@github.com:turnerlabs/terraform-ecs-fargate")
   -v, --verbose             Verbose output
+      --version             version for fargate-create
   -y, --yes                 don't ask questions and use defaults
 ```
 
