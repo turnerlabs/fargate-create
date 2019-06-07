@@ -298,24 +298,32 @@ func getDockerComposeYml(context *scaffoldContext) string {
 	//only add docker ports if container_port context variable is specified
 	var t string
 	if context.ContainerPort != "" {
-		t = `version: "2"
+		t = `version: "3.7"
 services:
-	{{.App}}:
-		build: ../../../
-		image: {{.AccountID}}.dkr.ecr.{{.Region}}.amazonaws.com/{{.App}}:0.1.0
-		ports:    
-		- 80:{{.ContainerPort}}
-		env_file:
-		- hidden.env	
+  {{.App}}:
+    build: ../../../
+    image: {{.AccountID}}.dkr.ecr.{{.Region}}.amazonaws.com/{{.App}}:0.1.0
+    ports:
+    - {{.ContainerPort}}:{{.ContainerPort}}
+    env_file:
+    - hidden.env
+    labels:
+      aws.ecs.fargate.deploy: 1
+    #x-fargate-secrets:
+      #KEY: value
 `
 	} else {
-		t = `version: "2"
+		t = `version: "3.7"
 services:
-	{{.App}}:
-		build: ../../../
-		image: {{.AccountID}}.dkr.ecr.{{.Region}}.amazonaws.com/{{.App}}:0.1.0
-		env_file:
-		- hidden.env	
+  {{.App}}:
+    build: ../../../
+    image: {{.AccountID}}.dkr.ecr.{{.Region}}.amazonaws.com/{{.App}}:0.1.0
+    env_file:
+    - hidden.env
+    labels:
+      aws.ecs.fargate.deploy: 1
+    #x-fargate-secrets:
+      #KEY: value
 `
 	}
 	return applyTemplate(t, context)
