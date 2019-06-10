@@ -134,7 +134,7 @@ func TestDockerComposeYml_Port(t *testing.T) {
 	yml := getDockerComposeYml(&context)
 	t.Log(yml)
 
-	expected := "- 80:3000"
+	expected := "- 3000:3000"
 	if !strings.Contains(yml, expected) {
 		t.Errorf("expected: %s; actual: %s", expected, yml)
 	}
@@ -155,7 +155,7 @@ func TestDockerComposeYml_NoPort(t *testing.T) {
 	yml := getDockerComposeYml(&context)
 	t.Log(yml)
 
-	notexpected := "- 80:"
+	notexpected := "ports:"
 	if strings.Contains(yml, notexpected) {
 		t.Errorf("not expected: %s; actual: %s", notexpected, yml)
 	}	

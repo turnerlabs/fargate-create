@@ -1,3 +1,10 @@
+## 0.7.9 (2019-06-10)
+
+### Features
+
+- updates outputted docker-compose.yml to v3.7
+
+
 ## 0.6.1 (2019-02-22)
 
 ### Features
