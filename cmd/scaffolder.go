@@ -100,16 +100,16 @@ func scaffoldInfrastructure(context *scaffoldContext) *scaffoldTemplate {
 	check(err)
 
 	//update tf backend in main.tf to match app/env
-	transformMainTFToContext(result.Env.Directory, context.Profile, context.App, context.Env)
+	transformMainTFToContext(result.Env.Directory, context.Profile, context.App, context.Env, context.Region)
 
 	return result
 }
 
-func transformMainTFToContext(dir string, profile string, app string, env string) {
+func transformMainTFToContext(dir string, profile string, app string, env string, region string) {
 	mainTfFile := filepath.Join(dir, "main.tf")
 	fileBits, err := ioutil.ReadFile(mainTfFile)
 	check(err)
-	maintf := updateTerraformBackend(string(fileBits), profile, app, env)
+	maintf := updateTerraformBackend(string(fileBits), profile, app, env, region)
 	err = ioutil.WriteFile(mainTfFile, []byte(maintf), 0644)
 	check(err)
 }

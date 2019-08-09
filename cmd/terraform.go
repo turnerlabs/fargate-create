@@ -120,7 +120,7 @@ func parseInputVarsHCL(tf string) (string, string, string, string, string, error
 	return app, environment, profile, region, containerPort, nil
 }
 
-func updateTerraformBackend(tf string, profile string, app string, env string) string {
+func updateTerraformBackend(tf string, profile string, app string, env string, region string) string {
 	//update terraform.backend (which doesn't support dynamic variables)
 	// profile = ""
 	// bucket  = ""
@@ -139,6 +139,10 @@ func updateTerraformBackend(tf string, profile string, app string, env string) s
 		if strings.HasPrefix(trimmed, "key") {
 			updatedLine = fmt.Sprintf(`    key     = "%s.terraform.tfstate"`, env)
 		}
+		if strings.HasPrefix(trimmed, "region") {
+			updatedLine = fmt.Sprintf(`    region  = "%s"`, region)
+		}
+
 		newTf += updatedLine + "\n"
 	}
 	return newTf
