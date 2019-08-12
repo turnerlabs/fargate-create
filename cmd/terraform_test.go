@@ -27,7 +27,8 @@ provider "aws" {
 	profile := "my-profile"
 	app := "my-app"
 	env := "qa"
-	result := updateTerraformBackend(tf, profile, app, env)
+	region := "us-east-1"
+	result := updateTerraformBackend(tf, profile, app, env, region)
 	t.Log(result)
 
 	expected := fmt.Sprintf(`profile = "%s"`, profile)
@@ -39,6 +40,46 @@ provider "aws" {
 		t.Errorf("expected: %s; actual: %s", expected, result)
 	}
 }
+
+func TestUpdateTerraformBackend_Region(t *testing.T) {
+
+	tf := `
+terraform {
+	backend "s3" {
+		region  = "us-east-1"
+		profile = ""
+		bucket  = ""
+		key     = "dev.terraform.tfstate"
+	}
+}
+
+provider "aws" {
+	region  = "${var.region}"
+	profile = "${var.aws_profile}"
+}
+`
+
+	profile := "my-profile"
+	app := "my-app"
+	env := "qa"
+	region := "us-west-1"
+	result := updateTerraformBackend(tf, profile, app, env, region)
+	t.Log(result)
+
+	expected := fmt.Sprintf(`profile = "%s"`, profile)
+	if !strings.Contains(result, expected) {
+		t.Errorf("expected: %s; actual: %s", expected, result)
+	}
+	expected = fmt.Sprintf(`bucket  = "tf-state-%s"`, app)
+	if !strings.Contains(result, expected) {
+		t.Errorf("expected: %s; actual: %s", expected, result)
+	}
+	expected = fmt.Sprintf(`region  = "%s"`, region)
+	if !strings.Contains(result, expected) {
+		t.Errorf("expected: %s; actual: %s", expected, result)
+	}
+}
+
 
 func TestParseInputVars(t *testing.T) {
 

@@ -73,11 +73,11 @@ func doUpgrade(cmd *cobra.Command, args []string) {
 			fileBits, err := ioutil.ReadFile(tfVarsFile)
 			check(err)
 			varFormat := strings.ToLower(filepath.Ext(tfVarsFile))
-			app, env, profile, _, _, err := parseInputVars(varFormat, string(fileBits))
+			app, env, profile, region, _, err := parseInputVars(varFormat, string(fileBits))
 			check(err)
 
 			//apply env transformation in src before upgrading
-			transformMainTFToContext(srcDir, profile, app, env)
+			transformMainTFToContext(srcDir, profile, app, env, region)
 
 			//upgrade env directory
 			a, u := upgradeDirectory(srcDir, destDir)
