@@ -1,4 +1,11 @@
-## 0.7.9 (2019-06-10)
+## 0.7.1 (2019-08-12)
+
+### Bug Fixes
+
+- AWS Region not respected for tf state bucket in environments [#27](https://github.com/turnerlabs/fargate-create/issues/27)
+
+
+## 0.7.0 (2019-06-10)
 
 ### Features
 
