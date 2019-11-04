@@ -109,10 +109,13 @@ fargate-create upgrade
 
 The following stacks are popular configurations that can be used with `fargate-create`
 
-- [Web Application (ALB - HTTP/HTTPS)](https://github.com/turnerlabs/terraform-ecs-fargate#fargate-create)
-- [Network Application (NLB)](https://github.com/turnerlabs/terraform-ecs-fargate-nlb#fargate-create)
-- [Background Worker](https://github.com/turnerlabs/terraform-ecs-fargate-background-worker#fargate-create)
+- [Web Application (ALB - HTTP or HTTPS)](https://github.com/turnerlabs/terraform-ecs-fargate#fargate-create)
+- [Web Application (ALB - HTTPS/DNS)](https://github.com/turnerlabs/terraform-ecs-fargate-dns-https#fargate-create)
+- [Web API Gateway](https://github.com/turnerlabs/terraform-ecs-fargate-apigateway#fargate-create)
 - [Scheduled Task](https://github.com/turnerlabs/terraform-ecs-fargate-scheduled-task#fargate-create)
+- [Background Worker (service)](https://github.com/turnerlabs/terraform-ecs-fargate-background-worker#fargate-create)
+- [Network Application (NLB)](https://github.com/turnerlabs/terraform-ecs-fargate-nlb#fargate-create)
+- [Airflow](https://github.com/turnerlabs/terraform-ecs-fargate-airflow#fargate-create)
  
 
 ### Help
