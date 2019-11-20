@@ -13,11 +13,13 @@ import (
 var buildCmd = &cobra.Command{
 	Use:   "build",
 	Short: "Scaffold out artifacts for various build systems",
+	Long:  "Scaffold out artifacts for various build systems",
 	Args:  cobra.ExactArgs(1),
 	Run:   doBuild,
 	Example: `
 fargate-create build local
 fargate-create build circleciv2
+fargate-create build githubactions
 `,
 }
 

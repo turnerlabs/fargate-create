@@ -176,11 +176,17 @@ Flags:
 
 ### CI/CD
 
-Using this technique, it's easy to codegen CI/CD pipelines for many popular build tools.  The `build` command supports this. For example:
+Using this technique, it's easy to codegen CI/CD pipelines for many popular build tools.  The `build` command supports this.  
 
 ```shell
-$ fargate-create build circleciv2
+$ fargate-create build <provider>
 ```
+
+The following providers are supported:
+
+- circleciv2
+- githubactions
+
 
 ### Extensibility
 

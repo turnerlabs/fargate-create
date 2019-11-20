@@ -8,11 +8,9 @@ type CircleCIv2 struct{}
 //ProvideArtifacts is the Provider implementation
 func (provider CircleCIv2) ProvideArtifacts(context Context) ([]*Artifact, error) {
 
-	contextTemplate := getContextTemplate(context)
-
 	artifacts := []*Artifact{}
 	artifacts = append(artifacts, createArtifact(".circleci/config.yml", getCircleCIv2YAML()))
-	artifacts = append(artifacts, createArtifact(".circleci/config.env", getConfigEnv(contextTemplate)))
+	artifacts = append(artifacts, createArtifact(".circleci/config.env", getConfigEnv(context)))
 
 	fmt.Println()
 	fmt.Println(`Be sure to supply the following environment variables in your Circle CI build:
@@ -64,11 +62,13 @@ jobs:
           command: . ${VAR}; fargate service deploy -i ${IMAGE}`
 }
 
-func getConfigEnv(context contextTemplate) string {
+func getConfigEnv(context Context) string {
+	contextTemplate := getContextTemplate(context)
+
 	textTemplate := `export FARGATE_CLUSTER="{{ .App }}-{{ .Env }}"
 export FARGATE_SERVICE="{{ .App }}-{{ .Env }}"
-export REPO="{{ .Account }}.dkr.ecr.us-east-1.amazonaws.com/{{ .App }}"
+export REPO="{{ .Account }}.dkr.ecr.{{ .Region }}.amazonaws.com/{{ .App }}"
 export VERSION="0.1.0"
 `
-	return applyTemplate(textTemplate, context)
+	return applyTemplate(textTemplate, contextTemplate)
 }
