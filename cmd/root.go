@@ -100,6 +100,10 @@ func (context scaffoldContext) GetAccount() string {
 	return context.AccountID
 }
 
+func (context scaffoldContext) GetRegion() string {
+	return context.Region
+}
+
 //gets run before every command
 func persistentPreRun(cmd *cobra.Command, args []string) {
 

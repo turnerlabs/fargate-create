@@ -1,8 +1,8 @@
 package build
 
 import (
-	"strings"
 	"fmt"
+	"strings"
 	"testing"
 )
 
@@ -12,6 +12,7 @@ func TestProvider_CircleCIv2(t *testing.T) {
 		App:     "my-app",
 		Env:     "dev",
 		Account: "123456789",
+		Region:  "us-west-1",
 	}
 
 	provider, err := GetProvider("circleciv2")
@@ -25,25 +26,30 @@ func TestProvider_CircleCIv2(t *testing.T) {
 	if artifacts == nil {
 		t.Fail()
 	}
+
+	t.Log(artifacts[0].FileContents)
 	if artifacts[0].FilePath != ".circleci/config.yml" {
 		t.Fail()
 	}
-	t.Log(artifacts[0].FileContents)
 
+	configEnv := artifacts[1].FileContents
+	t.Log(configEnv)
 	if artifacts[1].FilePath != ".circleci/config.env" {
 		t.Fail()
 	}
-	t.Log(artifacts[1].FileContents)
 
-	configEnv := fmt.Sprintf(`
-export FARGATE_CLUSTER="%v-%v"
-export FARGATE_SERVICE"=%v-%v"
-export REPO="%v.dkr.ecr.us-east-1.amazonaws.com/%v"
-export VERSION="0.1.0"
-	`, ctx.App, ctx.Env, ctx.App, ctx.Env, ctx.Account, ctx.App)
-	t.Log(configEnv)
+	lines := strings.Split(configEnv, "\n")
 
-	if strings.Contains(strings.TrimSpace(artifacts[1].FileContents), strings.TrimSpace(configEnv)) {
-		t.Errorf("unexpected config.env")
+	if strings.TrimSpace(lines[1]) != fmt.Sprintf(`export FARGATE_CLUSTER="%v-%v"`, ctx.App, ctx.Env) {
+		t.Error("not expecting", lines[1])
+	}
+	if strings.TrimSpace(lines[2]) != fmt.Sprintf(`export FARGATE_SERVICE="%v-%v"`, ctx.App, ctx.Env) {
+		t.Error("not expecting", lines[2])
+	}
+	if strings.TrimSpace(lines[3]) != fmt.Sprintf(`export REPO="%v.dkr.ecr.%s.amazonaws.com/%v"`, ctx.Account, ctx.Region, ctx.App) {
+		t.Error("not expecting", lines[3])
+	}
+	if strings.TrimSpace(lines[4]) != `export VERSION="0.1.0"` {
+		t.Error("not expecting", lines[4])
 	}
 }

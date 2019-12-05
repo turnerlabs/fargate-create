@@ -18,12 +18,14 @@ type Context interface {
 	GetApp() string
 	GetEnvironment() string
 	GetAccount() string
+	GetRegion() string
 }
 
 type contextTemplate struct {
 	App     string
 	Env     string
 	Account string
+	Region  string
 }
 
 func getContextTemplate(context Context) contextTemplate {
@@ -31,7 +33,8 @@ func getContextTemplate(context Context) contextTemplate {
 		App:     context.GetApp(),
 		Env:     context.GetEnvironment(),
 		Account: context.GetAccount(),
-	}	
+		Region:  context.GetRegion(),
+	}
 }
 
 func createArtifact(filePath string, fileContents string) *Artifact {
@@ -57,7 +60,11 @@ func GetProvider(provider string) (Provider, error) {
 
 	if providerString == "circleciv2" {
 		return CircleCIv2{}, nil
-	}	
+	}
+
+	if providerString == "githubactions" {
+		return GithubActions{}, nil
+	}
 
 	return nil, errors.New("build provider not supported: " + provider)
 }
