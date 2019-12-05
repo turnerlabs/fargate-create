@@ -184,8 +184,9 @@ $ fargate-create build <provider>
 
 The following providers are supported:
 
-- circleciv2
-- githubactions
+- [circleciv2](https://circleci.com/)
+- [githubactions](https://github.com/features/actions)
+- [awscodebuild](https://aws.amazon.com/codebuild/)
 
 
 ### Extensibility
