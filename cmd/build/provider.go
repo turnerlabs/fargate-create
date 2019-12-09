@@ -66,5 +66,9 @@ func GetProvider(provider string) (Provider, error) {
 		return GithubActions{}, nil
 	}
 
+	if providerString == "awscodebuild" {
+		return AWSCodeBuild{}, nil
+	}
+
 	return nil, errors.New("build provider not supported: " + provider)
 }
