@@ -1,8 +1,8 @@
 package build
 
 import (
-	"strings"
 	"fmt"
+	"strings"
 	"testing"
 )
 
@@ -10,6 +10,7 @@ type mockContext struct {
 	App     string
 	Env     string
 	Account string
+	Region  string
 }
 
 func (c mockContext) GetApp() string {
@@ -24,12 +25,17 @@ func (c mockContext) GetAccount() string {
 	return c.Account
 }
 
+func (c mockContext) GetRegion() string {
+	return c.Region
+}
+
 func TestProvider_Local(t *testing.T) {
 
 	ctx := mockContext{
 		App:     "my-app",
 		Env:     "dev",
 		Account: "123456789",
+		Region:  "us-east-1",
 	}
 
 	provider, err := GetProvider("local")
