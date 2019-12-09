@@ -1,3 +1,11 @@
+## 0.8.0 (2019-12-09)
+
+### Features
+
+- adds `githubactions` build provider [#32](https://github.com/turnerlabs/fargate-create/pull/32)
+- adds `awscodebuild` build provider [#33](https://github.com/turnerlabs/fargate-create/pull/33)
+
+
 ## 0.7.1 (2019-08-12)
 
 ### Bug Fixes
