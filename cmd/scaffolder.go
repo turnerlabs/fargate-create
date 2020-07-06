@@ -330,18 +330,25 @@ services:
 }
 
 func getDeployScript(context *scaffoldContext, config *templateConfig) string {
-	t := `#! /bin/bash
+	t := `#!/bin/bash
 set -e
 
 # build image
 docker-compose build
 
-# push image to ECR repo
 export AWS_PROFILE={{.Profile}}
 export AWS_DEFAULT_REGION={{.Region}}
-login=$(aws ecr get-login --no-include-email) && eval "$login"
-docker-compose push
-`
+
+# login to ECR
+version=$(aws --version | awk -F'[/.]' '{print $2}')
+if [ $version -eq "1" ]; then
+  login=$(aws ecr get-login --no-include-email) && eval "$login"
+else
+  aws ecr get-login-password | docker login --username AWS --password-stdin {{.AccountID}}.dkr.ecr.{{.Region}}.amazonaws.com
+fi
+
+# push image to ECR repo
+docker-compose push`
 
 	if config.TemplateType == templateTypeService {
 		t += `
