@@ -1,3 +1,10 @@
+## 0.9.0 (2020-07-06)
+
+### Features
+
+- adds support for aws cli v2 when generating the deploy.sh script (#34)
+
+
 ## 0.8.0 (2019-12-09)
 
 ### Features
