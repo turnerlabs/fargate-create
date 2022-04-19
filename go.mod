@@ -1,4 +1,4 @@
-module github.com/bdharris08/fargate-create
+module github.com/turnerlabs/fargate-create
 
 go 1.18
 
@@ -6,7 +6,6 @@ require (
 	github.com/aws/aws-sdk-go v1.14.31
 	github.com/hashicorp/go-getter v0.0.0-20180709183828-a33f09ce9fee
 	github.com/spf13/cobra v0.0.4-0.20180629152535-a114f312e075
-	github.com/turnerlabs/fargate-create v0.9.0
 	gopkg.in/yaml.v2 v2.2.1
 )
 
