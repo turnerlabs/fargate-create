@@ -12,7 +12,7 @@ build:
 
 dist:
 	echo building ${BUILD_VERSION}
-	gox -osarch="darwin/amd64" -osarch="linux/386" -osarch="linux/amd64" -osarch="windows/amd64" \
+	gox -osarch="darwin/amd64" -osarch="darwin/arm64" -osarch="linux/386" -osarch="linux/amd64" -osarch="windows/amd64" \
 		-ldflags "-X main.version=${BUILD_VERSION}" -output "dist/ncd_{{.OS}}_{{.Arch}}"
 
 prerelease:

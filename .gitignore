@@ -6,4 +6,5 @@ hidden.env
 Dockerfile.build
 .vscode
 terraform.tfvars
-fargate.json
+fargate.jsondist
+dist
