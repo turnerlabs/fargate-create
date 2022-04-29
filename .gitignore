@@ -8,3 +8,7 @@ Dockerfile.build
 terraform.tfvars
 fargate.jsondist
 dist
+develop
+master
+release
+pre

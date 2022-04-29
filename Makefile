@@ -17,15 +17,15 @@ dist:
 	GOOS=linux GOARCH=arm64 go build -ldflags "-X main.version=${BUILD_VERSION}" -o dist/ncd_linux_arm64
 	GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.version=${BUILD_VERSION}" -o dist/ncd_darwin_amd64
 	GOOS=darwin GOARCH=arm64 go build -ldflags "-X main.version=${BUILD_VERSION}" -o dist/ncd_darwin_arm64
-	GOOS=windows GOARCH=amd64 go build -ldflags "-X main.version=${BUILD_VERSION}" -o dist/ncd_windows_amd64
+	GOOS=windows GOARCH=amd64 go build -ldflags "-X main.version=${BUILD_VERSION}" -o dist/ncd_windows_amd64.exe
 
 prerelease:
-	gh release create $BUILD_VERSION --generate-notes --prerelease dist/*
+	gh release create ${BUILD_VERSION} --generate-notes --prerelease dist/*
 	aws s3 cp dist/ s3://get-fargate-create.turnerlabs.io/${BUILD_VERSION}/ --recursive
 	echo ${BUILD_VERSION} > develop && aws s3 cp ./develop s3://get-fargate-create.turnerlabs.io/
 
 release:
-	gh release create $BUILD_VERSION --generate-notes dist/*
+	gh release create ${BUILD_VERSION} --generate-notes dist/*
 	aws s3 cp dist/ s3://get-fargate-create.turnerlabs.io/${BUILD_VERSION}/ --recursive
 	echo ${BUILD_VERSION} > master && aws s3 cp ./master s3://get-fargate-create.turnerlabs.io/
 
@@ -33,3 +33,4 @@ clean:
 	rm -f fargate-create
 	rm -rf iac
 	rm -rf fargate-create-template
+	rm -rf dist
