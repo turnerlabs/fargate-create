@@ -1,0 +1,35 @@
+name: Build and deploy
+on:  
+  push:
+    tags:
+      - '*'
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Install Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.18
+
+      - name: Run unit tests
+        run: make test
+      
+      - name: Build for all platforms
+        run: make dist
+      
+      - name: Push up a new pre-release
+        if: ${{ contains(github.ref,'pre')}}
+        env: 
+          GITHUB_TOKEN: ${{ secrets.SECRET_GITHUB_TOKEN }}
+        run: make prerelease
+
+      - name: Push up a new normal release
+        if: ${{ !contains(github.ref,'pre')}}
+        env: 
+          GITHUB_TOKEN: ${{ secrets.SECRET_GITHUB_TOKEN }}
+        run: make release
