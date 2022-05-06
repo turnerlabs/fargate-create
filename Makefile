@@ -21,12 +21,12 @@ dist:
 
 prerelease:
 	gh release create ${BUILD_VERSION} --generate-notes --prerelease dist/*
-	aws s3 cp dist/ s3://get-fargate-create.turnerlabs.io/${BUILD_VERSION}/ --recursive
+	aws s3 cp dist/ s3://get-fargate-create.turnerlabs.io/${BUILD_VERSION}/ --recursive --region us-east-1
 	echo ${BUILD_VERSION} > develop && aws s3 cp ./develop s3://get-fargate-create.turnerlabs.io/
 
 release:
 	gh release create ${BUILD_VERSION} --generate-notes dist/*
-	aws s3 cp dist/ s3://get-fargate-create.turnerlabs.io/${BUILD_VERSION}/ --recursive
+	aws s3 cp dist/ s3://get-fargate-create.turnerlabs.io/${BUILD_VERSION}/ --recursive --region us-east-1
 	echo ${BUILD_VERSION} > master && aws s3 cp ./master s3://get-fargate-create.turnerlabs.io/
 
 clean:
