@@ -2,6 +2,7 @@
 
 PACKAGES := $(shell go list ./... | grep -v /mock)
 BUILD_VERSION := $(shell git describe --tags)
+AWS_DEFAULT_REGION := us-east-1
 
 test:
 	go test -race -cover $(PACKAGES)
@@ -21,12 +22,12 @@ dist:
 
 prerelease:
 	gh release create ${BUILD_VERSION} --generate-notes --prerelease dist/*
-	aws s3 cp dist/ s3://get-fargate-create.turnerlabs.io/${BUILD_VERSION}/ --recursive --region us-east-1
+	aws s3 cp dist/ s3://get-fargate-create.turnerlabs.io/${BUILD_VERSION}/ --recursive
 	echo ${BUILD_VERSION} > develop && aws s3 cp ./develop s3://get-fargate-create.turnerlabs.io/
 
 release:
 	gh release create ${BUILD_VERSION} --generate-notes dist/*
-	aws s3 cp dist/ s3://get-fargate-create.turnerlabs.io/${BUILD_VERSION}/ --recursive --region us-east-1
+	aws s3 cp dist/ s3://get-fargate-create.turnerlabs.io/${BUILD_VERSION}/ --recursive
 	echo ${BUILD_VERSION} > master && aws s3 cp ./master s3://get-fargate-create.turnerlabs.io/
 
 clean:
