@@ -1,14 +1,16 @@
 package cmd
 
 import (
+	ctx "context"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/sts"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/sts"
 	"github.com/spf13/cobra"
 )
 
@@ -104,7 +106,7 @@ func (context scaffoldContext) GetRegion() string {
 	return context.Region
 }
 
-//gets run before every command
+// gets run before every command
 func persistentPreRun(cmd *cobra.Command, args []string) {
 
 	if !(cmd.Name() == "fargate-create" || cmd.Name() == "build") {
@@ -160,13 +162,34 @@ func run(cmd *cobra.Command, args []string) {
 }
 
 func getAWSAccountID(profile string) (string, error) {
-	//call sts get-caller-identity
 	os.Setenv("AWS_PROFILE", profile)
-	svc := sts.New(session.New())
-	input := &sts.GetCallerIdentityInput{}
-	result, err := svc.GetCallerIdentity(input)
+	//call sts get-caller-identity
+	cfg, err := config.LoadDefaultConfig(
+		ctx.TODO(),
+		config.WithSharedConfigProfile(profile),
+	)
 	if err != nil {
-		return "", err
+		fmt.Println("error:", err)
+		os.Exit(1)
 	}
-	return *result.Account, nil
+
+	client := sts.NewFromConfig(cfg)
+
+	identity, err := client.GetCallerIdentity(
+		ctx.TODO(),
+		&sts.GetCallerIdentityInput{},
+	)
+	if err != nil {
+		fmt.Println("error:", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf(
+		"Account: %s\nUserID: %s\nARN: %s\n",
+		aws.ToString(identity.Account),
+		aws.ToString(identity.UserId),
+		aws.ToString(identity.Arn),
+	)
+
+	return *identity.Account, nil
 }
