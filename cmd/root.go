@@ -20,7 +20,7 @@ const (
 	targetInfrastructureDir = "iac"
 	varFormatHCL            = ".tfvars"
 	varFormatJSON           = ".json"
-	defaultTemplate         = "git@github.com:turnerlabs/terraform-ecs-fargate"
+	defaultTemplate         = "git@github.com:smithatlanta/terraform-ecs-fargate"
 )
 
 var verbose bool
@@ -43,7 +43,7 @@ fargate-create
 fargate-create -y
 
 # Use a template stored in github
-fargate-create -t git@github.com:turnerlabs/terraform-ecs-fargate?ref=v0.4.3
+fargate-create -t git@github.com:smithatlanta/terraform-ecs-fargate?ref=v0.4.3
 
 # Scaffold out files for various build systems
 fargate-create build circleciv2

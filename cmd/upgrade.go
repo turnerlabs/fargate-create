@@ -22,7 +22,7 @@ var upgradeCmd = &cobra.Command{
 	Run:   doUpgrade,
 	Example: `
 fargate-create upgrade
-fargate-create upgrade -t git@github.com:turnerlabs/terraform-ecs-fargate-scheduled-task
+fargate-create upgrade -t git@github.com:smithatlanta/terraform-ecs-fargate-scheduled-task
 fargate-create upgrade -d infrastructure
 `,
 }

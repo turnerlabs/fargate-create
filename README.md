@@ -1,8 +1,6 @@
-fargate-create
-==============
+# fargate-create
 
-A CLI tool for scaffolding out new [AWS ECS/Fargate](https://aws.amazon.com/fargate/) applications based on [terraform-ecs-fargate](https://github.com/turnerlabs/terraform-ecs-fargate) and [Fargate CLI](https://github.com/turnerlabs/fargate).
-
+A CLI tool for scaffolding out new [AWS ECS/Fargate](https://aws.amazon.com/fargate/) applications based on [terraform-ecs-fargate](https://github.com/smithatlanta/terraform-ecs-fargate) and [Fargate CLI](https://github.com/turnerlabs/fargate).
 
 ### Why?
 
@@ -14,13 +12,13 @@ You can install the CLI with a curl utility script (macos/linux) or by downloadi
 
 ```
 curl -s get-fargate-create.turnerlabs.io | sh
-````
+```
 
 ### Usage
 
 Assuming you have a project with a [Dockerfile]()...
 
-Specify your template's input parameters in [terraform.tfvars](https://www.terraform.io/docs/configuration/variables.html) (or terraform.json).  The [default web application template's](https://github.com/turnerlabs/terraform-ecs-fargate) input looks something like this. Note: [any Terraform template can be used](#extensibility)
+Specify your template's input parameters in [terraform.tfvars](https://www.terraform.io/docs/configuration/variables.html) (or terraform.json). The [default web application template's](https://github.com/smithatlanta/terraform-ecs-fargate) input looks something like this. Note: [any Terraform template can be used](#extensibility)
 
 ```hcl
 # app/env to scaffold
@@ -54,7 +52,8 @@ done
 
 Now you have all the files you need to spin up something in Fargate. Note that the Terraform files can be edited or customized. You can also use your own Terraform template using the `--template` flag.
 
-Infrastructure:  provision using Terraform
+Infrastructure: provision using Terraform
+
 ```shell
 cd iac/base
 terraform init && terraform apply
@@ -62,7 +61,8 @@ cd ../env/dev
 terraform init && terraform apply
 ```
 
-Application:  build/push using Docker and deploy using Fargate CLI
+Application: build/push using Docker and deploy using Fargate CLI
+
 ```shell
 docker-compose build
 login=$(aws ecr get-login --no-include-email) && eval "$login"
@@ -71,6 +71,7 @@ fargate service deploy -f docker-compose.yml
 ```
 
 To scaffold out additional environnments, simply change the `environment` input parameter in `terraform.tfvars` and re-run
+
 ```shell
 $ fargate-create
 scaffolding my-app prod
@@ -83,12 +84,14 @@ done
 ```
 
 And then bring up the new environment (no need to apply base again since it's shared):
+
 ```shell
 cd ../prod
 terraform init && terraform apply
 ```
 
 You'll end up with a directory structure that looks something like this:
+
 ```
 .
 |____iac
@@ -104,19 +107,17 @@ As changes are made to the various upstream templates over time, the `upgrade` c
 fargate-create upgrade
 ```
 
-
 ### Stacks
 
 The following stacks are popular configurations that can be used with `fargate-create`
 
-- [Web Application (ALB - HTTP or HTTPS)](https://github.com/turnerlabs/terraform-ecs-fargate#fargate-create)
+- [Web Application (ALB - HTTP or HTTPS)](https://github.com/smithatlanta/terraform-ecs-fargate#fargate-create)
 - [Web Application (ALB - HTTPS/DNS)](https://github.com/turnerlabs/terraform-ecs-fargate-dns-https#fargate-create)
 - [Web API Gateway](https://github.com/turnerlabs/terraform-ecs-fargate-apigateway#fargate-create)
-- [Scheduled Task](https://github.com/turnerlabs/terraform-ecs-fargate-scheduled-task#fargate-create)
+- [Scheduled Task](https://github.com/smithatlanta/terraform-ecs-fargate-scheduled-task#fargate-create)
 - [Background Worker (service)](https://github.com/turnerlabs/terraform-ecs-fargate-background-worker#fargate-create)
 - [Network Application (NLB)](https://github.com/turnerlabs/terraform-ecs-fargate-nlb#fargate-create)
 - [Airflow](https://github.com/turnerlabs/terraform-ecs-fargate-airflow#fargate-create)
- 
 
 ### Help
 
@@ -167,16 +168,15 @@ Flags:
   -f, --file string         file specifying Terraform input variables, in either HCL or JSON format (default "terraform.tfvars")
   -h, --help                help for fargate-create
   -d, --target-dir string   target directory where code is outputted (default "iac")
-  -t, --template string     URL of a compatible Terraform template (default "git@github.com:turnerlabs/terraform-ecs-fargate")
+  -t, --template string     URL of a compatible Terraform template (default "git@github.com:smithatlanta/terraform-ecs-fargate")
   -v, --verbose             Verbose output
       --version             version for fargate-create
   -y, --yes                 don't ask questions and use defaults
 ```
 
-
 ### CI/CD
 
-Using this technique, it's easy to codegen CI/CD pipelines for many popular build tools.  The `build` command supports this.  
+Using this technique, it's easy to codegen CI/CD pipelines for many popular build tools. The `build` command supports this.
 
 ```shell
 $ fargate-create build <provider>
@@ -188,16 +188,15 @@ The following providers are supported:
 - [githubactions](https://github.com/features/actions)
 - [awscodebuild](https://aws.amazon.com/codebuild/)
 
-
 ### Extensibility
 
 `fargate-create` can scaffold out any Terraform template (specified by `--template`) that meets the following requirements:
 
-- `base` and `env/dev` directory structure 
+- `base` and `env/dev` directory structure
 - a `env/dev/main.tf` with an s3 remote state backend
 - `app` and `environment` input variables
 
-Your template can be downloaded from a variety of locations using a variety of protocols.  The following are supported:
+Your template can be downloaded from a variety of locations using a variety of protocols. The following are supported:
 
 - Local files (`~/my-template`)
 - Git (`git@github.com:my-org/my-template`)
@@ -206,9 +205,10 @@ Your template can be downloaded from a variety of locations using a variety of p
 
 Optionally:
 
-- add a `fargate-create.yml` ([example here](examples/fargate-create.yml)) to your template to drive custom configuration, prompting for defaults, etc. 
+- add a `fargate-create.yml` ([example here](examples/fargate-create.yml)) to your template to drive custom configuration, prompting for defaults, etc.
 
-An [example](https://github.com/turnerlabs/terraform-ecs-fargate-scheduled-task/) of an extended template:
+An [example](https://github.com/smithatlanta/terraform-ecs-fargate-scheduled-task/) of an extended template:
+
 ```shell
-$ fargate-create -f my-scheduledtask.tfvars -t git@github.com:turnerlabs/terraform-ecs-fargate-scheduled-task
+$ fargate-create -f my-scheduledtask.tfvars -t git@github.com:smithatlanta/terraform-ecs-fargate-scheduled-task
 ```
