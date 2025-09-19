@@ -13,8 +13,14 @@ The main design goal of this project is to create an easy and maintainable Farga
 You can install the CLI with a curl utility script (macos/linux) or by downloading the binary from the releases page. Once installed you'll get the `fargate-create` command.
 
 ```
-curl -s get-fargate-create.turnerlabs.io | sh
-````
+curl -s fargate-create.get.turnerlabs.io | sh
+```
+
+If you'd like to install the latest prerelease, use this command:
+
+```
+curl -s fargate-create.get.turnerlabs.io | RELEASE=develop sh
+```
 
 ### Usage
 
