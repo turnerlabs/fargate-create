@@ -16,11 +16,14 @@ You can install the CLI with a curl utility script (macos/linux) or by downloadi
 curl -s fargate-create.get.turnerlabs.io | sh
 ```
 
+### Pre-Release
+
 If you'd like to install the latest prerelease, use this command:
 
 ```
 curl -s fargate-create.get.turnerlabs.io | RELEASE=develop sh
 ```
+````
 
 ### Usage
 
