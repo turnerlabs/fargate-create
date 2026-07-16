@@ -23,7 +23,6 @@ If you'd like to install the latest prerelease, use this command:
 ```
 curl -s fargate-create.get.turnerlabs.io | RELEASE=develop sh
 ```
-````
 
 ### Usage
 
