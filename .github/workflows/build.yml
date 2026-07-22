@@ -9,13 +9,13 @@ permissions:
 
 jobs:
   test:
-    name: Test
+    name: Build and deploy
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
 
       - name: Install Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v7
         with:
           go-version: 1.26.1
 
