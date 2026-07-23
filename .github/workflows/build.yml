@@ -9,18 +9,23 @@ permissions:
 
 jobs:
   test:
-    name: Test
+    name: Build and deploy
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
 
       - name: Install Go
-        uses: actions/setup-go@v1
+        uses: actions/setup-go@v7
         with:
-          go-version: 1.18
+          go-version: 1.26.1
 
       - name: Run unit tests
         run: make test
+
+      - name: Prevent s3 multipart upload issues
+        run: |
+          aws configure set default.s3.multipart_threshold 100MB
+          aws configure set default.s3.multipart_chunksize 100MB
 
       - name: Build for all platforms
         run: make dist
@@ -28,7 +33,7 @@ jobs:
       - name: Push up a new pre-release
         if: ${{ contains(github.ref,'pre')}}
         env:
-          GITHUB_TOKEN: ${{ secrets.SECRET_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: make prerelease
@@ -36,7 +41,7 @@ jobs:
       - name: Push up a new normal release
         if: ${{ !contains(github.ref,'pre')}}
         env:
-          GITHUB_TOKEN: ${{ secrets.SECRET_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: make release
