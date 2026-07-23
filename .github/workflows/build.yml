@@ -22,6 +22,11 @@ jobs:
       - name: Run unit tests
         run: make test
 
+      - name: Prevent s3 multipart upload issues
+        run: |
+          aws configure set default.s3.multipart_threshold 100MB
+          aws configure set default.s3.multipart_chunksize 100MB
+
       - name: Build for all platforms
         run: make dist
 
